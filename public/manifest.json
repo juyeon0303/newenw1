@@ -1,0 +1,18 @@
+{
+  "name": "사주 탐구",
+  "short_name": "사주탐구",
+  "description": "결정론이 아닌 철학적 사주 탐구 도구",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f0e0c",
+  "theme_color": "#1a1814",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
