@@ -45,6 +45,9 @@ export default function HomePage() {
           {TWIN_PARADOX_HEADLINE}
         </h2>
         <blockquote className="axiom__quote">{COORDINATE_AXIOM}</blockquote>
+        <p className="axiom__note">
+          추가 질문이 있다면 <Link href="/community">커뮤니티</Link>를 이용해 주세요.
+        </p>
       </section>
 
       <section className="site-philosophy" aria-labelledby="site-philosophy-heading">
@@ -71,17 +74,6 @@ export default function HomePage() {
           {HOME_READING_NOTE.headline}
         </h2>
         <div className="home-reading__body">{HOME_READING_NOTE.body}</div>
-      </section>
-
-      <section className="principles">
-        <div className="principle">
-          <span className="principle__num">一</span>
-          <h2>정확한 좌표</h2>
-          <p>
-            입춘·절기·경도 보정·대운까지. 만세력 수준의 데이터를 산출합니다.
-            생시가 다르면 좌표가 다르다는 전제 위에서, 해석의 재료는 정밀해야 합니다.
-          </p>
-        </div>
       </section>
     </div>
   );
