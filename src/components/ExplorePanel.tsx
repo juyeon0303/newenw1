@@ -1,10 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { ManseryeokResult } from '@/lib/manseryeok';
 import { EXPLORE_AXES, buildExplorePrompts } from '@/lib/philosophy/content';
 import {
-  buildExploreBundle,
   sortedHiddenTenStarKeys,
   sortedRelationKeys,
   sortedSpiritKeys,
@@ -13,21 +12,116 @@ import {
   SPIRIT_TEMPLATES,
   relationHint,
   tierLabel,
+  PRIORITY_CRITERIA,
   type ExploreTier,
+  type ExploreBundle,
 } from '@/lib/philosophy/build-explore';
+import {
+  getRelationCommentary,
+  getSpiritCommentary,
+  getTenStarCommentary,
+  buildDaewoonCommentary,
+  buildDaewoonMetaNote,
+  buildMonthCommandCommentary,
+  MONTH_COMMAND_QUESTIONS,
+} from '@/lib/philosophy/commentary';
+import { buildDaewoonQuestions } from '@/lib/philosophy/templates/daewoon';
+import { CommentaryBlock } from '@/components/CommentaryBlock';
+import type { ExploreSessionApi } from '@/hooks/useExploreSession';
+import type { DailyPrompt } from '@/lib/session/daily-prompt';
+import {
+  hiddenItemKey,
+  relationItemKey,
+  spiritItemKey,
+  tenStarItemKey,
+  daewoonItemKey,
+  monthCommandItemKey,
+} from '@/lib/session/item-keys';
+import { TodayExploreCard } from '@/components/TodayExploreCard';
+import { ExploreProgressBar } from '@/components/ExploreProgressBar';
+import { ExploreNotePad } from '@/components/ExploreNotePad';
+import type { ExploreNavigateTarget } from '@/components/ExploreClient';
+
+interface ProgressProps {
+  visited: number;
+  total: number;
+  notes: number;
+  memories: number;
+  canContinue: boolean;
+  onContinue: () => void;
+}
 
 interface Props {
   chart: ManseryeokResult;
+  bundle: ExploreBundle;
+  session: ExploreSessionApi;
+  dailyPrompt: DailyPrompt | null;
+  progress: ProgressProps;
+  navigateTo: ExploreNavigateTarget | null;
+  onNavigateConsumed: () => void;
 }
 
-type MainTab = 'relation' | 'tenstar' | 'spirit' | 'axis';
+type MainTab = 'relation' | 'tenstar' | 'spirit' | 'daewoon' | 'axis';
 
 function TierBadge({ tier }: { tier: ExploreTier }) {
   return <span className={`explore__tier explore__tier--${tier}`}>{tierLabel(tier)}</span>;
 }
 
-export function ExplorePanel({ chart }: Props) {
-  const bundle = useMemo(() => buildExploreBundle(chart), [chart]);
+interface QuestionRow {
+  id: string;
+  text: string;
+  tag?: string;
+}
+
+function ExploreQuestions({
+  questions,
+  itemLabel,
+  session,
+}: {
+  questions: QuestionRow[];
+  itemLabel: string;
+  session: ExploreSessionApi;
+}) {
+  return (
+    <ol className="explore__question-list">
+      {questions.map((q) => (
+        <li
+          key={q.id}
+          className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
+        >
+          <div className="explore__q-row">
+            <span>{q.text}</span>
+            <button
+              type="button"
+              className={`explore__bookmark ${session.isBookmarked(q.id) ? 'explore__bookmark--on' : ''}`}
+              aria-label={session.isBookmarked(q.id) ? '북마크 해제' : '북마크'}
+              onClick={() =>
+                session.toggleBookmark({
+                  id: q.id,
+                  text: q.text,
+                  itemLabel,
+                  savedAt: Date.now(),
+                })
+              }
+            >
+              {session.isBookmarked(q.id) ? '★' : '☆'}
+            </button>
+          </div>
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+export function ExplorePanel({
+  chart,
+  bundle,
+  session,
+  dailyPrompt,
+  progress,
+  navigateTo,
+  onNavigateConsumed,
+}: Props) {
 
   const relationKeys = sortedRelationKeys(bundle);
   const tenStarKeys = sortedTenStarKeys(bundle);
@@ -44,6 +138,20 @@ export function ExplorePanel({ chart }: Props) {
   const [selectedHidden, setSelectedHidden] = useState<string | null>(null);
   const [selectedSpirit, setSelectedSpirit] = useState<string | null>(null);
   const [showHidden, setShowHidden] = useState(false);
+
+  const currentDaewoonIdx = chart.luckMeta.currentDaewoonIndex;
+  const [selectedDaewoonAge, setSelectedDaewoonAge] = useState<number | null>(null);
+
+  const activeDaewoonAge =
+    selectedDaewoonAge ?? chart.daewoon[currentDaewoonIdx]?.startAge ?? chart.daewoon[0]?.startAge ?? null;
+  const activeDaewoon =
+    activeDaewoonAge != null
+      ? chart.daewoon.find((d) => d.startAge === activeDaewoonAge) ?? null
+      : null;
+  const activeDaewoonIdx =
+    activeDaewoon != null
+      ? chart.daewoon.findIndex((d) => d.startAge === activeDaewoon.startAge)
+      : -1;
 
   const axis = EXPLORE_AXES.find((a) => a.id === axisId) ?? EXPLORE_AXES[0];
   const generalPrompts = buildExplorePrompts(chart.dayMaster.stemKo);
@@ -80,15 +188,99 @@ export function ExplorePanel({ chart }: Props) {
     }
   }
 
+  function getActiveItemKey(): string | null {
+    if (mainTab === 'relation' && activeRelation) return relationItemKey(activeRelation);
+    if (mainTab === 'tenstar' && showHidden && activeHidden) return hiddenItemKey(activeHidden);
+    if (mainTab === 'tenstar' && activeTenStar) return tenStarItemKey(activeTenStar);
+    if (mainTab === 'spirit' && activeSpirit) return spiritItemKey(activeSpirit);
+    if (mainTab === 'daewoon' && activeDaewoonAge != null) return daewoonItemKey(activeDaewoonAge);
+    if (mainTab === 'axis' && axisId === 'season') return monthCommandItemKey();
+    return null;
+  }
+
+  function jumpToCategory(category: string, key: string) {
+    if (category === 'relation') {
+      setMainTab('relation');
+      setSelectedRelation(key);
+    } else if (category === 'tenstar') {
+      setMainTab('tenstar');
+      setSelectedTenStar(key);
+      setShowHidden(false);
+    } else if (category === 'hidden') {
+      setMainTab('tenstar');
+      setShowHidden(true);
+      setSelectedHidden(key);
+    } else if (category === 'spirit') {
+      setMainTab('spirit');
+      setSelectedSpirit(key);
+    } else if (category === 'daewoon') {
+      setMainTab('daewoon');
+      setSelectedDaewoonAge(Number(key));
+    } else if (category === 'month-command') {
+      setMainTab('axis');
+      setAxisId('season');
+    }
+  }
+
+  useEffect(() => {
+    if (!navigateTo) return;
+    jumpToCategory(navigateTo.category, navigateTo.key);
+    onNavigateConsumed();
+  }, [navigateTo]);
+
+  useEffect(() => {
+    const key = getActiveItemKey();
+    if (key) session.markVisited(key);
+  }, [mainTab, activeRelation, activeTenStar, activeHidden, activeSpirit, showHidden, activeDaewoonAge, axisId]);
+
+  const activeItemKey = getActiveItemKey();
+
   return (
     <div className="explore">
       <p className="explore__intro">
-        답할 필요 없음. 읽다가 떠오른 사람·장면·순간만 골라도 됩니다.
+        꼭 답하지 않아도 됩니다. 떠오른 장면·사람·순간만 골라도 됩니다.
       </p>
+
+      {dailyPrompt && (
+        <TodayExploreCard
+          prompt={dailyPrompt}
+          onSuggest={
+            dailyPrompt.suggestKey && dailyPrompt.suggestCategory
+              ? () =>
+                  jumpToOverview({
+                    category: dailyPrompt.suggestCategory!,
+                    key: dailyPrompt.suggestKey!,
+                    label: '',
+                    tier: 'reference',
+                    priority: 0,
+                  })
+              : undefined
+          }
+        />
+      )}
+
+      <ExploreProgressBar {...progress} />
 
       {bundle.overview.length > 0 && (
         <div className="explore__overview">
           <h4>탐구 우선순위</h4>
+          <details className="explore__criteria">
+            <summary>중요도 기준</summary>
+            <dl className="explore__criteria-dl">
+              <dt>핵심</dt>
+              <dd>{PRIORITY_CRITERIA.tiers.core.rule}</dd>
+              <dt>중요</dt>
+              <dd>{PRIORITY_CRITERIA.tiers.important.rule}</dd>
+              <dt>참고</dt>
+              <dd>{PRIORITY_CRITERIA.tiers.reference.rule}</dd>
+            </dl>
+            <p className="explore__criteria-note">
+              기둥: {Object.values(PRIORITY_CRITERIA.pillars).join(' · ')}
+            </p>
+            <p className="explore__criteria-note">
+              형충: {PRIORITY_CRITERIA.relations.order}
+            </p>
+          </details>
           <ol className="explore__overview-list">
             {bundle.overview.slice(0, 8).map((item) => (
               <li key={`${item.category}-${item.key}`}>
@@ -116,6 +308,13 @@ export function ExplorePanel({ chart }: Props) {
           onClick={() => setMainTab('tenstar')}
         >
           십성 ({tenStarKeys.length})
+        </button>
+        <button
+          type="button"
+          className={mainTab === 'daewoon' ? 'active' : ''}
+          onClick={() => setMainTab('daewoon')}
+        >
+          대운 ({chart.daewoon.length})
         </button>
         <button
           type="button"
@@ -172,16 +371,30 @@ export function ExplorePanel({ chart }: Props) {
                     </p>
                   </header>
 
-                  <ol className="explore__question-list">
-                    {relationEntry.questions.map((q) => (
-                      <li
-                        key={q.id}
-                        className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
-                      >
-                        {q.text}
-                      </li>
-                    ))}
-                  </ol>
+                  {(() => {
+                    const c = getRelationCommentary(
+                      relationHit.type,
+                      relationHit.kind,
+                      relationHit.label,
+                      relationHit.slots,
+                    );
+                    return c ? <CommentaryBlock note={c} /> : null;
+                  })()}
+
+                  <h4 className="explore__questions-heading">탐구 질문</h4>
+                  <ExploreQuestions
+                    questions={relationEntry.questions}
+                    itemLabel={relationHit.displayLabel}
+                    session={session}
+                  />
+                  {activeItemKey && (
+                    <ExploreNotePad
+                      itemKey={activeItemKey}
+                      itemLabel={relationHit.displayLabel}
+                      value={session.getNote(activeItemKey)}
+                      onSave={(text) => session.saveNote(activeItemKey, text)}
+                    />
+                  )}
                 </div>
               )}
             </>
@@ -272,16 +485,28 @@ export function ExplorePanel({ chart }: Props) {
                     </p>
                   </header>
 
-                  <ol className="explore__question-list">
-                    {tenStarEntry.questions.map((q) => (
-                      <li
-                        key={q.id}
-                        className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
-                      >
-                        {q.text}
-                      </li>
-                    ))}
-                  </ol>
+                  {(() => {
+                    const c = getTenStarCommentary(activeTenStar);
+                    const hit = tenStarEntry.hits[0];
+                    return c ? (
+                      <CommentaryBlock note={c} slot={hit?.slot} layer={hit?.layer} />
+                    ) : null;
+                  })()}
+
+                  <h4 className="explore__questions-heading">탐구 질문</h4>
+                  <ExploreQuestions
+                    questions={tenStarEntry!.questions}
+                    itemLabel={tenStarDef.ko}
+                    session={session}
+                  />
+                  {activeItemKey && (
+                    <ExploreNotePad
+                      itemKey={activeItemKey}
+                      itemLabel={tenStarDef.ko}
+                      value={session.getNote(activeItemKey)}
+                      onSave={(text) => session.saveNote(activeItemKey, text)}
+                    />
+                  )}
                 </div>
               )}
 
@@ -299,16 +524,28 @@ export function ExplorePanel({ chart }: Props) {
                     </p>
                   </header>
 
-                  <ol className="explore__question-list">
-                    {hiddenEntry.questions.map((q) => (
-                      <li
-                        key={q.id}
-                        className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
-                      >
-                        {q.text}
-                      </li>
-                    ))}
-                  </ol>
+                  {(() => {
+                    const c = getTenStarCommentary(activeHidden!);
+                    const hit = hiddenEntry.hits[0];
+                    return c ? (
+                      <CommentaryBlock note={c} slot={hit?.slot} layer="hidden" />
+                    ) : null;
+                  })()}
+
+                  <h4 className="explore__questions-heading">탐구 질문</h4>
+                  <ExploreQuestions
+                    questions={hiddenEntry.questions}
+                    itemLabel={`${hiddenDef.ko} (지장간)`}
+                    session={session}
+                  />
+                  {activeItemKey && (
+                    <ExploreNotePad
+                      itemKey={activeItemKey}
+                      itemLabel={`${hiddenDef.ko} (지장간)`}
+                      value={session.getNote(activeItemKey)}
+                      onSave={(text) => session.saveNote(activeItemKey, text)}
+                    />
+                  )}
                 </div>
               )}
             </>
@@ -356,19 +593,98 @@ export function ExplorePanel({ chart }: Props) {
                     </p>
                   </header>
 
-                  <ol className="explore__question-list">
-                    {spiritEntry.questions.map((q) => (
-                      <li
-                        key={q.id}
-                        className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
-                      >
-                        {q.text}
-                      </li>
-                    ))}
-                  </ol>
+                  <CommentaryBlock
+                    note={getSpiritCommentary(
+                      activeSpirit!,
+                      spiritEntry.hits[0]?.basis,
+                    )}
+                  />
+
+                  <h4 className="explore__questions-heading">탐구 질문</h4>
+                  <ExploreQuestions
+                    questions={spiritEntry.questions}
+                    itemLabel={spiritDef.name}
+                    session={session}
+                  />
+                  {activeItemKey && (
+                    <ExploreNotePad
+                      itemKey={activeItemKey}
+                      itemLabel={spiritDef.name}
+                      value={session.getNote(activeItemKey)}
+                      onSave={(text) => session.saveNote(activeItemKey, text)}
+                    />
+                  )}
                 </div>
               )}
             </>
+          )}
+        </div>
+      )}
+
+      {mainTab === 'daewoon' && (
+        <div className="explore__template-view">
+          <CommentaryBlock note={buildDaewoonMetaNote(chart)} />
+
+          <div className="explore__chips explore__chips--daewoon">
+            {chart.daewoon.map((d, idx) => (
+              <button
+                key={d.startAge}
+                type="button"
+                className={`explore__chip ${d.startAge === activeDaewoonAge ? 'explore__chip--active' : ''} ${idx === currentDaewoonIdx ? 'explore__chip--current' : ''}`}
+                onClick={() => setSelectedDaewoonAge(d.startAge)}
+              >
+                {idx === currentDaewoonIdx && (
+                  <span className="explore__badge explore__badge--now">現在</span>
+                )}
+                {d.startAge}세
+                <span className="explore__chip-sub">{d.pillar}</span>
+              </button>
+            ))}
+          </div>
+
+          {activeDaewoon && activeDaewoonIdx >= 0 && (
+            <div className="explore__template-panel">
+              <header className="explore__template-header">
+                <h3>
+                  {activeDaewoon.pillar}
+                  <span className="explore__hanja">{activeDaewoon.startAge}~{activeDaewoon.endAge}세</span>
+                  {activeDaewoonIdx === currentDaewoonIdx && (
+                    <span className="explore__badge">현재</span>
+                  )}
+                </h3>
+                <p className="explore__domain">
+                  {activeDaewoon.stemTenStarKo} · {activeDaewoon.stageBongKo}
+                </p>
+                <p className="explore__hits">
+                  {activeDaewoon.startYear}~{activeDaewoon.endYear}년
+                </p>
+              </header>
+
+              <CommentaryBlock
+                note={buildDaewoonCommentary(activeDaewoon, chart, {
+                  isCurrent: activeDaewoonIdx === currentDaewoonIdx,
+                  index: activeDaewoonIdx,
+                })}
+              />
+
+              <h4 className="explore__questions-heading">탐구 질문</h4>
+              <ExploreQuestions
+                questions={buildDaewoonQuestions(
+                  activeDaewoon,
+                  activeDaewoonIdx === currentDaewoonIdx,
+                )}
+                itemLabel={`${activeDaewoon.pillar} (${activeDaewoon.startAge}세~)`}
+                session={session}
+              />
+              {activeItemKey && (
+                <ExploreNotePad
+                  itemKey={activeItemKey}
+                  itemLabel={`대운 ${activeDaewoon.pillar}`}
+                  value={session.getNote(activeItemKey)}
+                  onSave={(text) => session.saveNote(activeItemKey, text)}
+                />
+              )}
+            </div>
           )}
         </div>
       )}
@@ -390,11 +706,34 @@ export function ExplorePanel({ chart }: Props) {
 
           <div className="explore__panel">
             <p className="explore__opener">{axis.opener}</p>
-            <ol className="explore__question-list">
-              {axis.prompts.map((p) => (
-                <li key={p}>{p}</li>
-              ))}
-            </ol>
+
+            {axisId === 'season' && (
+              <>
+                <CommentaryBlock note={buildMonthCommandCommentary(chart)} />
+                <h4 className="explore__questions-heading">월령·계절 탐구</h4>
+                <ol className="explore__question-list">
+                  {MONTH_COMMAND_QUESTIONS.map((p) => (
+                    <li key={p}>{p}</li>
+                  ))}
+                </ol>
+                {activeItemKey && (
+                  <ExploreNotePad
+                    itemKey={activeItemKey}
+                    itemLabel="월령·계절"
+                    value={session.getNote(activeItemKey)}
+                    onSave={(text) => session.saveNote(activeItemKey, text)}
+                  />
+                )}
+              </>
+            )}
+
+            {axisId !== 'season' && (
+              <ol className="explore__question-list">
+                {axis.prompts.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ol>
+            )}
           </div>
 
           <div className="explore__prompts">

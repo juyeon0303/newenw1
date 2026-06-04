@@ -1,0 +1,35 @@
+# dependencies
+node_modules
+npm-debug.log*
+
+# next.js
+.next
+out
+
+# git
+.git
+.gitignore
+
+# dev / test
+coverage
+*.md
+!README.md
+AGENTS.md
+CLAUDE.md
+
+# env (Render에서 대시보드로 설정)
+.env*
+!.env.example
+
+# IDE
+.cursor
+.vscode
+*.tsbuildinfo
+
+# vercel
+.vercel
+
+# docker
+Dockerfile*
+docker-compose*
+.dockerignore

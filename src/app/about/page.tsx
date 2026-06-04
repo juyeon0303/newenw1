@@ -1,5 +1,10 @@
 import Link from 'next/link';
-import { WHAT_SAJU_IS_NOT, SAJU_MANIFESTO } from '@/lib/philosophy/content';
+import {
+  WHAT_SAJU_IS_NOT,
+  SAJU_MANIFESTO,
+  COORDINATE_AXIOM,
+  TWIN_PARADOX_HEADLINE,
+} from '@/lib/philosophy/content';
 
 export const metadata = {
   title: '사주란 — 사주 탐구',
@@ -16,6 +21,11 @@ export default function AboutPage() {
         과학적 예측 모델이 아니라, 동아시아 철학·신비주의·상징학의 전통 안에서
         자아와 시간을 성찰하는 언어에 가깝다.
       </p>
+
+      <section className="about__axiom">
+        <h2>{TWIN_PARADOX_HEADLINE}</h2>
+        <blockquote className="about__axiom-quote">{COORDINATE_AXIOM}</blockquote>
+      </section>
 
       <section>
         <h2>사주가 아닌 것</h2>
@@ -45,8 +55,8 @@ export default function AboutPage() {
             &lsquo;그때 누가 있었는지&rsquo;, &lsquo;몸이 어떻게 반응했는지&rsquo;를 먼저 떠올린다.
           </li>
           <li>
-            <strong>납득할 때까지 본다</strong> — 해석이 마음에 안 들면,
-            다른 축(월령·십성·운·형충)에서 다시 읽어 본다.
+            <strong>다시 본다</strong> — 해석이 마음에 들지 않으면,
+            다른 축(월령·십성·운·형충)에서 읽어 본다.
           </li>
         </ol>
       </section>

@@ -22,17 +22,26 @@ import {
   type RelationQuestion,
   type RelationSlotRef,
   type ExploreTier,
-  scoreToTier,
   tierLabel,
 } from './templates/relations';
+import {
+  scoreRelation,
+  scoreSpirit,
+  scoreTenStar,
+  scoreToTier,
+  PRIORITY_CRITERIA,
+  maxTier,
+} from './priority';
 
 export type { ExploreTier };
-export { tierLabel };
+export { tierLabel, PRIORITY_CRITERIA };
 
 export interface ScoredEntry<T> {
   key: string;
   priority: number;
   tier: ExploreTier;
+  /** 중요도 산정 근거 (최고 점 hit 기준) */
+  reason?: string;
   hits: T[];
   questions: Array<GeneratedQuestion | SpiritQuestion | RelationQuestion>;
 }
@@ -64,36 +73,6 @@ const SLOT_KO: Record<PillarSlot, string> = {
   hour: '시',
 };
 
-const SLOT_WEIGHT: Record<PillarSlot, number> = {
-  day: 35,
-  month: 22,
-  hour: 18,
-  year: 10,
-};
-
-const LAYER_WEIGHT = { stem: 48, branch: 42, hidden: 12 };
-
-const RELATION_TYPE_WEIGHT: Record<string, number> = {
-  충: 100,
-  형: 82,
-  해: 72,
-  파: 68,
-  원진: 62,
-  귀문: 58,
-  합: 52,
-  회: 48,
-  천라: 44,
-  지망: 44,
-};
-
-const SPIRIT_BASIS_WEIGHT: Record<string, number> = {
-  일지: 28,
-  일간: 22,
-  년지: 12,
-  월지: 14,
-  시지: 16,
-};
-
 function slotsForStem(chart: ManseryeokResult, stem: HeavenStem): RelationSlotRef[] {
   const slots: PillarSlot[] = ['year', 'month', 'day', 'hour'];
   return slots
@@ -111,26 +90,6 @@ function slotsForBranch(chart: ManseryeokResult, branch: EarthBranch): RelationS
 function formatRelationSlots(slots: RelationSlotRef[]): string {
   const parts = slots.map((s) => `${s.slotKo}${s.part === '천간' ? '간' : '지'}`);
   return [...new Set(parts)].join('·');
-}
-
-function relationPriority(hit: Omit<RelationHit, 'priority' | 'tier'>): number {
-  let w = RELATION_TYPE_WEIGHT[hit.type] ?? 40;
-  if (hit.kind === 'stem' && hit.type === '충') w += 12;
-  for (const s of hit.slots) {
-    w += SLOT_WEIGHT[s.slot];
-  }
-  return w;
-}
-
-function tenStarHitPriority(hit: TenStarHit): number {
-  return LAYER_WEIGHT[hit.layer] + SLOT_WEIGHT[hit.slot];
-}
-
-function spiritHitPriority(hit: SpiritHit): number {
-  let w = hit.category === '12신살' ? 40 : 50;
-  if (hit.basis) w += SPIRIT_BASIS_WEIGHT[hit.basis] ?? 8;
-  if (hit.auspicious === true) w += 5;
-  return w;
 }
 
 function collectTenStarHits(chart: ManseryeokResult): { primary: TenStarHit[]; hidden: TenStarHit[] } {
@@ -239,8 +198,9 @@ function collectRelationHits(chart: ManseryeokResult): RelationHit[] {
       displayLabel: `${ko} (${formatRelationSlots(uniqueSlots)})`,
       slots: uniqueSlots,
     };
-    const priority = relationPriority(base);
-    hits.push({ ...base, priority, tier: scoreToTier(priority) });
+    const slotNames = uniqueSlots.map((s) => s.slot);
+    const pr = scoreRelation(base.type, base.kind, slotNames);
+    hits.push({ ...base, priority: pr.score, tier: pr.tier });
   }
 
   for (const rel of dedupeRelations(chart.stemRelations)) {
@@ -258,8 +218,9 @@ function collectRelationHits(chart: ManseryeokResult): RelationHit[] {
       displayLabel: `${ko} (${formatRelationSlots(uniqueSlots)})`,
       slots: uniqueSlots,
     };
-    const priority = relationPriority(base);
-    hits.push({ ...base, priority, tier: scoreToTier(priority) });
+    const slotNames = uniqueSlots.map((s) => s.slot);
+    const pr = scoreRelation(base.type, base.kind, slotNames);
+    hits.push({ ...base, priority: pr.score, tier: pr.tier });
   }
 
   return hits.sort((a, b) => b.priority - a.priority);
@@ -278,12 +239,17 @@ function groupTenStars(hits: TenStarHit[]): Map<string, ScoredEntry<TenStarHit>>
       questions: [],
     };
     entry.hits.push(hit);
-    entry.priority = Math.max(entry.priority, tenStarHitPriority(hit));
+    const pr = scoreTenStar(hit.slot, hit.layer);
+    if (pr.score > entry.priority) {
+      entry.priority = pr.score;
+      entry.tier = pr.tier;
+      entry.reason = pr.reason;
+    }
     map.set(hit.tenStarKo, entry);
   }
 
   for (const [, entry] of map) {
-    entry.tier = scoreToTier(entry.priority);
+    entry.tier = entry.tier ?? scoreToTier(entry.priority);
     const seen = new Set<string>();
     for (const hit of entry.hits) {
       for (const q of buildTenStarQuestions(hit)) {
@@ -310,12 +276,17 @@ function groupSpirits(hits: SpiritHit[]): Map<string, ScoredEntry<SpiritHit>> {
       questions: [],
     };
     entry.hits.push(hit);
-    entry.priority = Math.max(entry.priority, spiritHitPriority(hit));
+    const pr = scoreSpirit(hit.category, hit.basis, hit.slot);
+    if (pr.score > entry.priority) {
+      entry.priority = pr.score;
+      entry.tier = pr.tier;
+      entry.reason = pr.reason;
+    }
     map.set(hit.name, entry);
   }
 
   for (const [, entry] of map) {
-    entry.tier = scoreToTier(entry.priority);
+    entry.tier = entry.tier ?? scoreToTier(entry.priority);
     const seen = new Set<string>();
     for (const hit of entry.hits) {
       for (const q of buildSpiritQuestions(hit)) {
@@ -344,7 +315,11 @@ function groupRelations(hits: RelationHit[]): Map<string, ScoredEntry<RelationHi
     };
     entry.hits.push(hit);
     entry.priority = Math.max(entry.priority, hit.priority);
-    entry.tier = scoreToTier(entry.priority);
+    entry.tier = maxTier(entry.tier ?? hit.tier, hit.tier);
+    if (!entry.reason && hit.slots.length) {
+      const pr = scoreRelation(hit.type, hit.kind, hit.slots.map((s) => s.slot));
+      entry.reason = pr.reason;
+    }
     map.set(key, entry);
   }
 

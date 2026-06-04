@@ -121,6 +121,27 @@ export function relationHint(type: RelationType): string {
   return TYPE_HINT[type];
 }
 
+const PAIR_QUESTIONS: Record<string, string[]> = {
+  子午: [
+    '자(夜)와 오(昼)의 충 — 수면·리듬·거주지가 갑자기 바뀌었던 적이 있는가?',
+    '일·시에 걸리면 가까운 관계나 말년 쪽에서 "휘둘린다"는 느낌이 반복되는가?',
+  ],
+  甲庚: [
+    '갑(木)과 경(金)의 충 — 내 방식과 규칙·역할이 정면으로 부딪힌 적이 있는가?',
+    '말·결정·행동이 엇갈렸던 장면 — 그때 누구와 무엇이 걸려 있었는가?',
+  ],
+  卯酉: [
+    '봄(卯)과 가을(酉)의 충 — 시작과 마무리, 대외와 대내가 바뀌는 순간이 있었는가?',
+  ],
+};
+
+function pairQuestions(label: string): string[] {
+  for (const [key, qs] of Object.entries(PAIR_QUESTIONS)) {
+    if (label.includes(key)) return qs;
+  }
+  return [];
+}
+
 export function buildRelationQuestions(hit: RelationHit): RelationQuestion[] {
   const tpl = TYPE_TEMPLATES[hit.type];
   if (!tpl) return [];
@@ -129,6 +150,8 @@ export function buildRelationQuestions(hit: RelationHit): RelationQuestion[] {
   const push = (text: string, tag: RelationQuestion['tag']) => {
     out.push({ id: `${hit.label}-${tag}-${out.length}`, text, tag });
   };
+
+  for (const q of pairQuestions(hit.label)) push(q, 'position');
 
   for (const q of tpl.core) push(q, 'core');
 
@@ -156,7 +179,7 @@ export function tierLabel(tier: ExploreTier): string {
 }
 
 export function scoreToTier(score: number): ExploreTier {
-  if (score >= 120) return 'core';
-  if (score >= 75) return 'important';
+  if (score >= 130) return 'core';
+  if (score >= 90) return 'important';
   return 'reference';
 }

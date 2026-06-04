@@ -39,3 +39,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# community runtime data (seed is committed)
+/data/community.json
+/data/*.tmp
+
+# local command output
+build-out.txt
+test-out.txt

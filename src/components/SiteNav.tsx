@@ -3,6 +3,7 @@ import Link from 'next/link';
 const links = [
   { href: '/', label: '처음' },
   { href: '/explore', label: '탐구' },
+  { href: '/community', label: '커뮤니티' },
   { href: '/about', label: '사주란' },
 ];
 
