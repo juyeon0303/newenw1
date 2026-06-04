@@ -18,14 +18,26 @@ export interface ExploreAxis {
   prompts: string[];
 }
 
+/** 사주와 결정론 — 소개 카드·홈 철학 */
+export const SAJU_DETERMINISM = {
+  title: '사주와 결정론',
+  body: `결정론은 맞다. 다만 「이 사주를 가진 사람은 무조건 이때 하와이에 가서 햄버거를 먹는다」, 「무조건 IT 개발자가 된다」 같은 식의 결정론이 아니다.
+
+사주에서 확실한 것은 타고난 음양오행뿐이며, 시대를 거치며 해석법이 쌓였을 뿐이다. 사주는 기본적으로 언어가 아니라 에너지에 대한 학문이고, 그 에너지를 어떻게 풀이할지는 그 에너지를 느끼는 당사자만 안다. 남은 가이드만 해 줄 수 있다.
+
+그래서 이 사이트는 해설보다 탐구와 커뮤니티를 중심으로 만들었다.`,
+};
+
+export const SITE_PHILOSOPHY_HEADLINE = '이 사이트의 철학';
+
 export const WHAT_SAJU_IS_NOT = [
   {
     title: '통계학이 아니다',
     body: '역사적으로 쌓였다고 해서 유의미한 통계가 되지 않는다. 변수 통제 없는 경험의 나열과 집단 데이터는 다른 것이다.',
   },
   {
-    title: '결정론이 아니다',
-    body: '팔자는 "이렇게 된다"는 예언이 아니라, 여러 요소가 교차하는 좌표다. 같은 좌표도 해석의 프레임에 따라 다른 질문을 던진다.',
+    title: SAJU_DETERMINISM.title,
+    body: SAJU_DETERMINISM.body,
   },
 ];
 

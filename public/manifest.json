@@ -1,7 +1,7 @@
 {
   "name": "사주 탐구",
   "short_name": "사주탐구",
-  "description": "결정론이 아닌 철학적 사주 탐구 도구",
+  "description": "만세력 좌표와 탐구·커뮤니티 중심의 사주 사이트",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f0e0c",

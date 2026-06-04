@@ -4,11 +4,12 @@ import {
   SAJU_MANIFESTO,
   COORDINATE_AXIOM,
   TWIN_PARADOX_HEADLINE,
+  SAJU_DETERMINISM,
 } from '@/lib/philosophy/content';
 
 export const metadata = {
   title: '사주란 — 사주 탐구',
-  description: '사주는 통계도, 결정론도 아닙니다.',
+  description: '만세력 좌표와 탐구·커뮤니티 중심의 사주 사이트.',
 };
 
 export default function AboutPage() {
@@ -33,7 +34,9 @@ export default function AboutPage() {
           {WHAT_SAJU_IS_NOT.map((item) => (
             <div key={item.title} className="about__card">
               <h3>{item.title}</h3>
-              <p>{item.body}</p>
+              <p className={item.title === SAJU_DETERMINISM.title ? 'about__card-body--pre' : undefined}>
+                {item.body}
+              </p>
             </div>
           ))}
         </div>
@@ -63,11 +66,7 @@ export default function AboutPage() {
 
       <section>
         <h2>이 사이트의 입장</h2>
-        <p>
-          우리는 사주를 &lsquo;맞추면 끝&rsquo;인 점술이 아니라 &lsquo;끝없이 질문할 수 있는&rsquo; 탐구 도구로
-          제공한다. 입춘·절기·경도 보정·대운까지 데이터를 정밀하게 산출하되,
-          해석은 사용자의 사유에 맡긴다.
-        </p>
+        <p className="about__philosophy-text">{SAJU_DETERMINISM.body}</p>
       </section>
 
       <Link href="/explore" className="btn btn--primary">

@@ -31,7 +31,7 @@ export default async function CommunityPage({
   return (
     <div className="community-page">
       <header className="community-page__header">
-        <p className="community-page__eyebrow">非決定論 · 探究 · 共有</p>
+        <p className="community-page__eyebrow">探究 · 共有</p>
         <h1>탐구 커뮤니티</h1>
         <p className="community-page__intro">{COMMUNITY_INTRO}</p>
         <div className="community-page__actions">

@@ -1,5 +1,11 @@
 import Link from 'next/link';
-import { SAJU_MANIFESTO, COORDINATE_AXIOM, TWIN_PARADOX_HEADLINE } from '@/lib/philosophy/content';
+import {
+  SAJU_MANIFESTO,
+  COORDINATE_AXIOM,
+  TWIN_PARADOX_HEADLINE,
+  SITE_PHILOSOPHY_HEADLINE,
+  SAJU_DETERMINISM,
+} from '@/lib/philosophy/content';
 import { ResumeExploreBanner } from '@/components/ResumeExploreBanner';
 
 export default function HomePage() {
@@ -8,7 +14,7 @@ export default function HomePage() {
       <ResumeExploreBanner />
       <section className="hero">
         <p className="hero__manifesto">{SAJU_MANIFESTO}</p>
-        <p className="hero__eyebrow">非統計 · 非決定論 · 探究</p>
+        <p className="hero__eyebrow">非統計 · 探究 · 共有</p>
         <h1>
           사주는 답이 아니라,
           <br />
@@ -35,6 +41,14 @@ export default function HomePage() {
           {TWIN_PARADOX_HEADLINE}
         </h2>
         <blockquote className="axiom__quote">{COORDINATE_AXIOM}</blockquote>
+      </section>
+
+      <section className="site-philosophy" aria-labelledby="site-philosophy-heading">
+        <h2 id="site-philosophy-heading" className="site-philosophy__headline">
+          {SITE_PHILOSOPHY_HEADLINE}
+        </h2>
+        <h3 className="site-philosophy__topic">{SAJU_DETERMINISM.title}</h3>
+        <div className="site-philosophy__body">{SAJU_DETERMINISM.body}</div>
       </section>
 
       <section className="principles">

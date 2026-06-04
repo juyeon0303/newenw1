@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     default: '사주 탐구',
     template: '%s | 사주 탐구',
   },
-  description: '결정론이 아닌 철학적 사주 탐구 도구. 만세력 데이터, 해석은 당신의 질문에.',
+  description: '만세력 좌표 산출과 탐구·커뮤니티 중심의 사주 사이트. 해설보다 질문과 나눔.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
