@@ -16,6 +16,7 @@ import {
   useExploreSession,
   useRestoreSession,
 } from '@/hooks/useExploreSession';
+import { EXPLORE_PAGE_LEAD } from '@/lib/philosophy/content';
 import { birthFormToInput } from '@/lib/session/explore-storage';
 import { buildDailyPrompt } from '@/lib/session/daily-prompt';
 import { overviewStorageKey } from '@/lib/session/item-keys';
@@ -126,10 +127,7 @@ export function ExploreClient() {
     <div className="explore-page">
       <section className="explore-page__form">
         <h1>사주 탐구</h1>
-        <p className="lead">
-          만세력 데이터를 산출합니다. 해석은 고정하지 않습니다.
-          읽다가 떠오른 것만 골라도 됩니다.
-        </p>
+        <p className="lead">{EXPLORE_PAGE_LEAD}</p>
         {chart && saved && (
           <p className="explore-page__resume">
             이전 탐구가 이 브라우저에 저장되어 있습니다. 이어서 읽을 수 있습니다.

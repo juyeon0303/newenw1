@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { SiteNav } from '@/components/SiteNav';
+import { SITE_FOOTER } from '@/lib/philosophy/content';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -33,7 +34,7 @@ export default function RootLayout({
         <SiteNav />
         <main className="main">{children}</main>
         <footer className="footer">
-          <p>사주는 통계가 아닙니다. 질문을 세우세요.</p>
+          <p lang="en">{SITE_FOOTER}</p>
         </footer>
       </body>
     </html>

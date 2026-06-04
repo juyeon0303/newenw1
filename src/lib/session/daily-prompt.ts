@@ -1,5 +1,6 @@
 import type { ManseryeokResult } from '@/lib/manseryeok';
 import type { ExploreBundle } from '@/lib/philosophy/build-explore';
+import { DAILY_EXPLORE_SEEDS } from '@/lib/philosophy/content';
 
 export interface DailyPrompt {
   title: string;
@@ -9,15 +10,7 @@ export interface DailyPrompt {
   suggestCategory?: 'relation' | 'tenstar' | 'spirit' | 'hidden';
 }
 
-const DAY_SEEDS = [
-  '오늘 떠오른 사람 한 명만 적어 본다.',
-  '몸이 먼저 반응했던 순간 — 언제였는지.',
-  '설명은 안 맞는데 기억만 선명한 장면.',
-  '반복되는 계절·달 — 그때마다 하는 행동.',
-  '말하지 않고 참았던 때, 어디가 조였는지.',
-  '뜻밖에 잘 풀렸던 해 — 그해 초반에 뭐가 있었는지.',
-  '지금 대운 구간에서 바뀐 것 하나.',
-];
+const DAY_SEEDS = DAILY_EXPLORE_SEEDS;
 
 /** 날짜 + 팔자 기반 — 매일 다른 한 줄 */
 export function buildDailyPrompt(
@@ -40,13 +33,13 @@ export function buildDailyPrompt(
 
   if (sewoon) {
     parts.push(
-      `${year}년 세운 ${sewoon.pillar}(${sewoon.stemTenStarKo}) — 올해 이미 터진 일·반복되는 테마가 있으면 적어 본다.`,
+      `${year}년 세운 ${sewoon.pillar}(${sewoon.stemTenStarKo}) — 올해 몸·기억이 먼저 반응하는 테마가 있으면 적어 본다. 정답은 없다.`,
     );
   }
 
   if (daewoon) {
     parts.push(
-      `지금 대운 ${daewoon.pillar}(${daewoon.startAge}~${daewoon.endAge}세) — 이 10년 중 기억나는 해 하나.`,
+      `지금 대운 ${daewoon.pillar}(${daewoon.startAge}~${daewoon.endAge}세) — 이 10년을 예전과 다르게 보게 된 이유가 있으면 한 줄.`,
     );
   }
 

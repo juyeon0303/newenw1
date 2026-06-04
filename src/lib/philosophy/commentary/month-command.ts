@@ -97,14 +97,14 @@ export function buildMonthCommandCommentary(chart: ManseryeokResult): Commentary
       },
     ],
     sources: [Q, J, S],
-    reflection: `태어난 계절(${SEASON_KO[monthBranch]}) — 그 냄새·온도·빛이 아직 몸에 남아 있는지, 아니면 다른 계절이 더 편한지부터 본다.`,
+    reflection: `태어난 계절(${SEASON_KO[monthBranch]}) — 몸이 기억하는 냄새·온도·빛. 맞다·틀리다보다, 지금 편한 계절부터 본다.`,
     contextLine: `월지 ${chart.pillars.month.pillar} · 사령 ${chart.monthCommand.saenglingKo} · 일간↔월령 ${rel.label}`,
   };
 }
 
 export const MONTH_COMMAND_QUESTIONS = [
-  '태어난 계절 — 그 계절에 태어난 친구·형제와 기질이 비슷한가, 다른가?',
-  '일이 잘 풀렸던 달·잘 안 풀렸던 달 — 계절(봄·여름·가을·겨울)과 겹치는가?',
-  '몸이 「활짝」 또는 「움츠러」 드는 계절 — 사주의 월령과 같은가?',
-  '부모·학교·첫 사회 — 「차갑다/뜨겁다/습하다/건조하다」 중 뭐가 더 기억에 남는가?',
+  '태어난 계절 — 몸이 기억하는 온도·빛·냄새. 맞다·틀리다보다 편한지 본다.',
+  '같은 월령을 다시 볼 때 다른 장면이 떠오른다면 — 탐구가 깊어진 것일 수 있다.',
+  '몸이 「활짝」 또는 「움츠러」 드는 계절 — 월령 에너지와 겹치는지, 정답 없이 느껴 본다.',
+  '이 계절을 피하려 하거나 붙잡으려 하는 마음 — 둘 다 이 좌표 안의 움직임이다.',
 ];

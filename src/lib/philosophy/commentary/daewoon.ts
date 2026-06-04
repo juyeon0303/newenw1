@@ -111,6 +111,6 @@ export function buildDaewoonMetaNote(chart: ManseryeokResult): CommentaryNote {
       },
     ],
     sources: [S, J],
-    reflection: '대운표에서 기억나는 구간 하나 — 그때의 나와 지금의 나, 무엇이 다른지 적어 본다.',
+    reflection: '대운표에서 기억나는 구간 하나 — 예전 탐구와 지금 떠오르는 장면이 다르면, 탐구가 깊어진 것일 수 있다. 정답을 맞히려 하지 않는다.',
   };
 }

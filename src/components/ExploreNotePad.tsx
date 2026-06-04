@@ -30,7 +30,7 @@ export function ExploreNotePad({
   return (
     <div className="explore-note">
       <label className="explore-note__label" htmlFor={`note-${itemKey}`}>
-        탐구 노트 · {itemLabel}
+        노트
       </label>
       <textarea
         id={`note-${itemKey}`}

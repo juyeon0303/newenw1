@@ -29,11 +29,11 @@ export function buildDaewoonQuestions(
   };
 
   push(
-    `${luck.startAge}~${luck.endAge}세 — 그 구간에 이사·이직·연애·건강·돈 중 크게 바뀐 것이 있었는가?`,
+    `${luck.startAge}~${luck.endAge}세 — 그 구간에 에너지가 크게 움직였던 때가 있었는가? 정답을 맞히려 하지 않는다.`,
     'core',
   );
   push(
-    `${luck.startYear}~${luck.endYear}년 — 기억나는 해 하나를 골라, 그해에 무슨 일이 있었는지 적어 본다.`,
+    `${luck.startYear}~${luck.endYear}년 — 기억나는 해 하나. 예전 탐구와 지금 떠오르는 장면이 다르면, 그것도 괜찮다.`,
     'core',
   );
 
@@ -41,10 +41,10 @@ export function buildDaewoonQuestions(
   if (ts) for (const q of ts) push(q, 'tenstar');
 
   if (isCurrent) {
-    push('지금 이 10년 — 아직 절반도 안 지났다면, 앞으로 바꾸고 싶은 것 하나는?', 'current');
-    push('올해 — 벌써 반복되는 테마·사람·감정이 있는가?', 'current');
+    push('지금 이 10년 — 벗어나려 하든 따르려 하든, 모두 이 운 안의 움직임이다.', 'current');
+    push('올해 — 더 묻고 싶지 않다면, 정착해도 된다.', 'current');
   } else {
-    push('그 10년이 끝난 뒤 — 다음 10년과 비교해 뭐가 달라졌는지.', 'mirror');
+    push('그 10년을 다시 볼 때 — 예전과 다른 기억이 떠오르는가?', 'mirror');
   }
 
   return out;

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { ManseryeokResult } from '@/lib/manseryeok';
-import { EXPLORE_AXES, buildExplorePrompts } from '@/lib/philosophy/content';
+import { EXPLORE_AXES, EXPLORE_PANEL_INTRO, buildExplorePrompts } from '@/lib/philosophy/content';
 import {
   sortedHiddenTenStarKeys,
   sortedRelationKeys,
@@ -64,7 +64,13 @@ interface Props {
 type MainTab = 'relation' | 'tenstar' | 'spirit' | 'daewoon' | 'axis';
 
 function TierBadge({ tier }: { tier: ExploreTier }) {
-  return <span className={`explore__tier explore__tier--${tier}`}>{tierLabel(tier)}</span>;
+  return (
+    <span
+      className={`explore__tier explore__tier--${tier}`}
+      title={tierLabel(tier)}
+      aria-label={tierLabel(tier)}
+    />
+  );
 }
 
 interface QuestionRow {
@@ -83,33 +89,31 @@ function ExploreQuestions({
   session: ExploreSessionApi;
 }) {
   return (
-    <ol className="explore__question-list">
+    <ul className="explore__question-list">
       {questions.map((q) => (
         <li
           key={q.id}
-          className={q.tag === 'mirror' ? 'explore__q--mirror' : ''}
+          className={`explore__q${q.tag === 'mirror' ? ' explore__q--mirror' : ''}`}
         >
-          <div className="explore__q-row">
-            <span>{q.text}</span>
-            <button
-              type="button"
-              className={`explore__bookmark ${session.isBookmarked(q.id) ? 'explore__bookmark--on' : ''}`}
-              aria-label={session.isBookmarked(q.id) ? '북마크 해제' : '북마크'}
-              onClick={() =>
-                session.toggleBookmark({
-                  id: q.id,
-                  text: q.text,
-                  itemLabel,
-                  savedAt: Date.now(),
-                })
-              }
-            >
-              {session.isBookmarked(q.id) ? '★' : '☆'}
-            </button>
-          </div>
+          <p className="explore__q-text">{q.text}</p>
+          <button
+            type="button"
+            className={`explore__bookmark ${session.isBookmarked(q.id) ? 'explore__bookmark--on' : ''}`}
+            aria-label={session.isBookmarked(q.id) ? '북마크 해제' : '북마크'}
+            onClick={() =>
+              session.toggleBookmark({
+                id: q.id,
+                text: q.text,
+                itemLabel,
+                savedAt: Date.now(),
+              })
+            }
+          >
+            {session.isBookmarked(q.id) ? '★' : '☆'}
+          </button>
         </li>
       ))}
-    </ol>
+    </ul>
   );
 }
 
@@ -237,9 +241,10 @@ export function ExplorePanel({
 
   return (
     <div className="explore">
-      <p className="explore__intro">
-        꼭 답하지 않아도 됩니다. 떠오른 장면·사람·순간만 골라도 됩니다.
-      </p>
+      <details className="explore__intro-wrap">
+        <summary>탐구 안내</summary>
+        <p className="explore__intro">{EXPLORE_PANEL_INTRO}</p>
+      </details>
 
       {dailyPrompt && (
         <TodayExploreCard
@@ -262,8 +267,8 @@ export function ExplorePanel({
       <ExploreProgressBar {...progress} />
 
       {bundle.overview.length > 0 && (
-        <div className="explore__overview">
-          <h4>탐구 우선순위</h4>
+        <details className="explore__overview">
+          <summary>먼저 볼 것</summary>
           <details className="explore__criteria">
             <summary>중요도 기준</summary>
             <dl className="explore__criteria-dl">
@@ -291,7 +296,7 @@ export function ExplorePanel({
               </li>
             ))}
           </ol>
-        </div>
+        </details>
       )}
 
       <div className="explore__main-tabs">
@@ -381,7 +386,6 @@ export function ExplorePanel({
                     return c ? <CommentaryBlock note={c} /> : null;
                   })()}
 
-                  <h4 className="explore__questions-heading">탐구 질문</h4>
                   <ExploreQuestions
                     questions={relationEntry.questions}
                     itemLabel={relationHit.displayLabel}
@@ -489,11 +493,10 @@ export function ExplorePanel({
                     const c = getTenStarCommentary(activeTenStar);
                     const hit = tenStarEntry.hits[0];
                     return c ? (
-                      <CommentaryBlock note={c} slot={hit?.slot} layer={hit?.layer} />
+                      <CommentaryBlock note={c} />
                     ) : null;
                   })()}
 
-                  <h4 className="explore__questions-heading">탐구 질문</h4>
                   <ExploreQuestions
                     questions={tenStarEntry!.questions}
                     itemLabel={tenStarDef.ko}
@@ -528,11 +531,10 @@ export function ExplorePanel({
                     const c = getTenStarCommentary(activeHidden!);
                     const hit = hiddenEntry.hits[0];
                     return c ? (
-                      <CommentaryBlock note={c} slot={hit?.slot} layer="hidden" />
+                      <CommentaryBlock note={c} />
                     ) : null;
                   })()}
 
-                  <h4 className="explore__questions-heading">탐구 질문</h4>
                   <ExploreQuestions
                     questions={hiddenEntry.questions}
                     itemLabel={`${hiddenDef.ko} (지장간)`}
@@ -600,7 +602,6 @@ export function ExplorePanel({
                     )}
                   />
 
-                  <h4 className="explore__questions-heading">탐구 질문</h4>
                   <ExploreQuestions
                     questions={spiritEntry.questions}
                     itemLabel={spiritDef.name}
@@ -667,7 +668,6 @@ export function ExplorePanel({
                 })}
               />
 
-              <h4 className="explore__questions-heading">탐구 질문</h4>
               <ExploreQuestions
                 questions={buildDaewoonQuestions(
                   activeDaewoon,
@@ -710,8 +710,7 @@ export function ExplorePanel({
             {axisId === 'season' && (
               <>
                 <CommentaryBlock note={buildMonthCommandCommentary(chart)} />
-                <h4 className="explore__questions-heading">월령·계절 탐구</h4>
-                <ol className="explore__question-list">
+                <ol className="explore__question-list explore__question-list--spaced">
                   {MONTH_COMMAND_QUESTIONS.map((p) => (
                     <li key={p}>{p}</li>
                   ))}
@@ -736,19 +735,19 @@ export function ExplorePanel({
             )}
           </div>
 
-          <div className="explore__prompts">
-            <h4>공통</h4>
-            <ol>
+          <details className="explore__prompts">
+            <summary>공통 질문</summary>
+            <ol className="explore__question-list">
               {generalPrompts.map((p) => (
                 <li key={p}>{p}</li>
               ))}
             </ol>
-          </div>
+          </details>
         </>
       )}
 
-      <div className="explore__chart-hint">
-        <h4>팔자 데이터</h4>
+      <details className="explore__chart-hint">
+        <summary>팔자 요약</summary>
         <dl>
           <dt>일간</dt>
           <dd>{chart.dayMaster.stemKo} ({chart.dayMaster.elementKo})</dd>
@@ -772,7 +771,7 @@ export function ExplorePanel({
             금{chart.elementCount.金} 수{chart.elementCount.水}
           </dd>
         </dl>
-      </div>
+      </details>
     </div>
   );
 }

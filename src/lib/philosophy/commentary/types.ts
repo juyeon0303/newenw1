@@ -25,7 +25,7 @@ export interface CommentaryNote {
 }
 
 export const COMMENTARY_DISCLAIMER =
-  '전통 문헌에서 자주 거론되는 해석의 한 축입니다. 팔자·대운·환경에 따라 달라질 수 있습니다.';
+  '문헌 해석의 한 축입니다. 정답이 아니라 탐구용 맥락입니다.';
 
 export function pickSlotNote(
   note: CommentaryNote,

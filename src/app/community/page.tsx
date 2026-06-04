@@ -4,13 +4,17 @@ import { PostCard } from '@/components/community/PostCard';
 import { listPosts } from '@/lib/community/store';
 import { isValidCategory } from '@/lib/community/validation';
 import type { CommunityCategoryId } from '@/lib/community/types';
-import { COMMUNITY_INTRO, COMMUNITY_RULES } from '@/lib/philosophy/content';
+import {
+  COMMUNITY_INTRO,
+  COMMUNITY_NOTICE,
+  COMMUNITY_RULES,
+} from '@/lib/philosophy/content';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: '탐구 커뮤니티',
-  description: '사주 탐구에서 떠오른 기억·질문을 나누는 곳',
+  description: '정답 없이 탐구하다 떠오른 기억·질문을 나누는 곳',
 };
 
 type SearchParams = Promise<{ category?: string }>;
@@ -43,6 +47,13 @@ export default async function CommunityPage({
           </Link>
         </div>
       </header>
+
+      <aside className="community-notice" aria-labelledby="community-notice-title">
+        <h2 id="community-notice-title">{COMMUNITY_NOTICE.title}</h2>
+        {COMMUNITY_NOTICE.paragraphs.map((paragraph, i) => (
+          <p key={i}>{paragraph}</p>
+        ))}
+      </aside>
 
       <CommunityCategoryNav active={category} />
 

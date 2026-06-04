@@ -10,11 +10,11 @@ interface Props {
 export function TodayExploreCard({ prompt, onSuggest }: Props) {
   return (
     <div className="today-card">
-      <h4>{prompt.title}</h4>
-      <p>{prompt.body}</p>
+      <p className="today-card__label">{prompt.title}</p>
+      <p className="today-card__body">{prompt.body}</p>
       {onSuggest && prompt.suggestKey && (
         <button type="button" className="today-card__btn" onClick={onSuggest}>
-          우선순위 항목으로 이어가기 →
+          이어가기
         </button>
       )}
     </div>
