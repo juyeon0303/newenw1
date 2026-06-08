@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#07070f" />
+    <title>8-bit — 기상 중</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        font-family: system-ui, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+        background:
+          radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 255, 0.25), transparent),
+          #07070f;
+        color: #f4f4f8;
+      }
+      .panel {
+        width: min(24rem, 100%);
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(2, 6, 23, 0.88);
+        text-align: center;
+      }
+      .brand {
+        margin: 0 0 0.5rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        color: #c4b5fd;
+      }
+      .stage {
+        margin: 0 0 1.25rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.45);
+      }
+      .tip-title {
+        margin: 1.25rem 0 0.35rem;
+        font-size: 0.82rem;
+        color: #e9d5ff;
+      }
+      .tip-body {
+        margin: 0;
+        font-size: 0.78rem;
+        line-height: 1.65;
+        color: rgba(255, 255, 255, 0.55);
+      }
+      .bar {
+        height: 3px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .bar span {
+        display: block;
+        height: 100%;
+        width: 40%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+        animation: slide 1.8s ease-in-out infinite;
+      }
+      @keyframes slide {
+        from {
+          transform: translateX(-120%);
+        }
+        to {
+          transform: translateX(280%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="panel" role="status" aria-live="polite">
+      <p class="brand">8-bit</p>
+      <p class="stage">만세력 서버 기상 중…</p>
+      <div class="bar" aria-hidden="true"><span></span></div>
+      <p class="tip-title">무료 서버는 잠을 잔다</p>
+      <p class="tip-body">
+        서버가 깨어나는 동안 잠시 기다려 주세요. 연결되면 자동으로 새로고침됩니다.
+      </p>
+    </div>
+    <script>
+      (function poll() {
+        fetch('/api/health', { method: 'HEAD', cache: 'no-store' })
+          .then(function (res) {
+            if (res.ok) location.replace(location.pathname + location.search);
+            else setTimeout(poll, 2500);
+          })
+          .catch(function () {
+            setTimeout(poll, 2500);
+          });
+      })();
+    </script>
+  </body>
+</html>

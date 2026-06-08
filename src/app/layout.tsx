@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Geist } from 'next/font/google';
 import { SiteNav } from '@/components/SiteNav';
+import { WakeBridge } from '@/components/WakeBridge';
+import { WakeBridgeFallback } from '@/components/WakeBridgeFallback';
 import { ChartProvider } from '@/contexts/ChartContext';
 import { LocaleProvider } from '@/contexts/LocaleContext';
 import { SITE_FOOTER } from '@/lib/philosophy/content';
@@ -39,8 +41,15 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body className={`${geistSans.variable} antialiased`}>
+        <WakeBridgeFallback />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}`,
+          }}
+        />
         <LocaleProvider>
           <ChartProvider>
+            <WakeBridge />
             <SiteNav />
             <main className="main">{children}</main>
             <footer className="footer">

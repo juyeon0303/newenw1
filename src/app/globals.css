@@ -3231,6 +3231,186 @@ body {
   color: rgba(255, 255, 255, 0.45);
 }
 
+/* Render 기상·초기 로딩 브릿지 */
+.wake-bridge {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(7, 7, 15, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.wake-bridge--static {
+  z-index: 99;
+}
+
+.wake-bridge[data-state='out'],
+#8bit-wake-static[data-state='out'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.42s ease;
+}
+
+.wake-bridge__glow {
+  position: absolute;
+  width: min(28rem, 90vw);
+  height: 12rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 70%);
+  filter: blur(24px);
+  pointer-events: none;
+}
+
+.wake-bridge__panel {
+  position: relative;
+  width: min(26rem, 100%);
+  padding: 2rem 1.5rem 1.75rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(2, 6, 23, 0.9);
+  text-align: center;
+}
+
+.wake-bridge__brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.wake-bridge__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border: 1px solid rgba(167, 139, 250, 0.45);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  background: rgba(139, 92, 246, 0.12);
+}
+
+.wake-bridge__stage {
+  margin: 0 0 1.25rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: none;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.wake-bridge__glyphs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+}
+
+.wake-bridge__glyphs--pulse .wake-bridge__glyph {
+  animation: wake-glyph-pulse 2.2s ease-in-out infinite;
+}
+
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(4) {
+  animation-delay: 0.45s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(5) {
+  animation-delay: 0.6s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(6) {
+  animation-delay: 0.75s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(7) {
+  animation-delay: 0.9s;
+}
+.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(8) {
+  animation-delay: 1.05s;
+}
+
+@keyframes wake-glyph-pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+.wake-bridge__glyph {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #e9d5ff;
+  text-shadow: 0 0 16px rgba(167, 139, 250, 0.45);
+}
+
+.wake-bridge__bar {
+  height: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.wake-bridge__bar-fill {
+  display: block;
+  height: 100%;
+  width: 38%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, #a78bfa, transparent);
+}
+
+.wake-bridge__bar-fill--css {
+  animation: wake-bar-slide 1.8s ease-in-out infinite;
+}
+
+@keyframes wake-bar-slide {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(280%);
+  }
+}
+
+.wake-bridge__tip {
+  margin-top: 1.35rem;
+  text-align: left;
+}
+
+.wake-bridge__tip-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  color: #e9d5ff;
+}
+
+.wake-bridge__tip-body {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.wake-bridge__note {
+  margin: 1rem 0 0;
+  font-size: 0.72rem;
+  color: rgba(251, 191, 36, 0.75);
+}
+
 /* 탐색 스탯 칩 */
 .explore-tools {
   display: grid;
