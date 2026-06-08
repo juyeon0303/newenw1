@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { calculateManseryeok, type ManseryeokInput, type ManseryeokResult } from '@/lib/manseryeok';
 import { buildSynergyReport } from '@/lib/philosophy/synergy';
@@ -12,6 +13,8 @@ import {
 } from '@/lib/session/chart-share';
 import { useLocale } from '@/contexts/LocaleContext';
 import { ELEMENT_I18N, t } from '@/lib/i18n/ui-strings';
+import { AlgorithmTransparency } from '@/components/explore/AlgorithmTransparency';
+import { synergyScoreBreakdown } from '@/lib/interpretation/transparency';
 
 function inputToForm(input: ManseryeokInput): Partial<BirthFormValues> {
   return {
@@ -22,7 +25,7 @@ function inputToForm(input: ManseryeokInput): Partial<BirthFormValues> {
     minute: input.minute ?? 0,
     gender: input.gender,
     yajasi: input.yajasi ?? false,
-    longitude: input.timeCorrection?.longitude ?? 126.978,
+    unknownTime: input.unknownTime ?? false,
   };
 }
 
@@ -35,7 +38,11 @@ function calc(input: ManseryeokInput | null): ManseryeokResult | null {
   }
 }
 
-export function SynergyClient() {
+interface SynergyClientProps {
+  embedded?: boolean;
+}
+
+export function SynergyClient({ embedded = false }: SynergyClientProps) {
   const searchParams = useSearchParams();
   const { locale } = useLocale();
   const [inputA, setInputA] = useState<ManseryeokInput | null>(() =>
@@ -63,11 +70,16 @@ export function SynergyClient() {
   }
 
   return (
-    <div className="synergy-page">
-      <header className="synergy-page__header">
-        <h1>{t('synergy_title', locale)}</h1>
-        <p className="synergy-page__lead">{t('synergy_lead', locale)}</p>
-      </header>
+    <div className={`synergy-page${embedded ? ' synergy-page--embedded' : ''}`}>
+      {!embedded && (
+        <header className="synergy-page__header">
+          <h1>{t('synergy_title', locale)}</h1>
+          <p className="synergy-page__lead">{t('synergy_lead', locale)}</p>
+          <Link href="/explore" className="btn btn--ghost btn--sm">
+            ← 명리 탐색
+          </Link>
+        </header>
+      )}
 
       <div className="synergy-forms">
         <section>
@@ -99,6 +111,7 @@ export function SynergyClient() {
               <h3>{t('synergy_score', locale)}</h3>
               <p className="synergy-card__score">{report.synergyScore}</p>
               <p className="synergy-card__summary">{report.summaryKo}</p>
+              <AlgorithmTransparency breakdown={synergyScoreBreakdown(report)} />
             </article>
 
             <article className="synergy-card synergy-card--wide">
@@ -153,8 +166,8 @@ export function SynergyClient() {
 
           <p className="synergy-share-hint">
             {locale === 'ko'
-              ? `공유 링크: /synergy?a=${encodeChartParam(inputA!)}&b=${encodeChartParam(inputB!)}`
-              : `Share: /synergy?a=…&b=…`}
+              ? `공유 링크: /explore?tab=synergy&a=${encodeChartParam(inputA!)}&b=${encodeChartParam(inputB!)}`
+              : `Share: /explore?tab=synergy&a=…&b=…`}
           </p>
         </section>
       )}

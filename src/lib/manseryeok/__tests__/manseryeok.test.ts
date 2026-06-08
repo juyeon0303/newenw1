@@ -74,6 +74,42 @@ describe('calculateManseryeok', () => {
     expect(chart.wolwoon.length).toBe(12);
   });
 
+  it('시간모름이면 삼주만 산출하고 시주는 미상', () => {
+    const full = calculateManseryeok({
+      year: 1990,
+      month: 5,
+      day: 15,
+      hour: 14,
+      minute: 30,
+      gender: 'male',
+      timeCorrection: { applyEquationOfTime: false, applyDst: false },
+    });
+    const unknown = calculateManseryeok({
+      year: 1990,
+      month: 5,
+      day: 15,
+      hour: 0,
+      minute: 0,
+      gender: 'male',
+      unknownTime: true,
+      timeCorrection: { applyEquationOfTime: false, applyDst: false },
+    });
+
+    expect(unknown.meta.timeUnknown).toBe(true);
+    expect(unknown.pillars.hour.unknown).toBe(true);
+    expect(unknown.pillars.year.pillar).toBe(full.pillars.year.pillar);
+    expect(unknown.pillars.month.pillar).toBe(full.pillars.month.pillar);
+    expect(unknown.pillars.day.pillar).toBe(full.pillars.day.pillar);
+    expect(unknown.luckMeta.provisional).toBe(true);
+    const branchCount =
+      unknown.elementCount.木 +
+      unknown.elementCount.火 +
+      unknown.elementCount.土 +
+      unknown.elementCount.金 +
+      unknown.elementCount.水;
+    expect(branchCount).toBe(6);
+  });
+
   it('기타 신살과 12신살을 포함한다', () => {
     const chart = calculateManseryeok({
       year: 1990,

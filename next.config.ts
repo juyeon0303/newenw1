@@ -7,8 +7,9 @@ const nextConfig: NextConfig = {
   eslint: { ignoreDuringBuilds: true },
   async redirects() {
     return [
-      { source: '/about', destination: '/', permanent: true },
-      { source: '/explore', destination: '/analyze', permanent: true },
+      { source: '/about', destination: '/philosophy', permanent: true },
+      { source: '/analyze', destination: '/explore', permanent: true },
+      { source: '/tips', destination: '/wiki', permanent: true },
     ];
   },
 };

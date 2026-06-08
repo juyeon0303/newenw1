@@ -1,4 +1,4 @@
-import type { ManseryeokResult } from '@/lib/manseryeok';
+import { activeBranches, type ManseryeokResult } from '@/lib/manseryeok';
 import { detectBranchRelations } from '@/lib/manseryeok/compute/relations';
 import type { EarthBranch } from '@/lib/manseryeok/constants/ganji';
 import { getFlowMonthPillar } from '@/lib/lifestyle/flow-pillar';
@@ -31,8 +31,7 @@ const MONTH_LABELS = [
 ];
 
 function natalBranches(chart: ManseryeokResult): EarthBranch[] {
-  const { year, month, day, hour } = chart.pillars;
-  return [year.branch, month.branch, day.branch, hour.branch];
+  return activeBranches(chart);
 }
 
 function branchClash(

@@ -1,10 +1,13 @@
-import { LifestyleClient } from '@/components/lifestyle/LifestyleClient';
+import { redirect } from 'next/navigation';
 
-export const metadata = {
-  title: '라이프스타일',
-  description: '이직·재물 달력·행운 부적·운명 공동체',
-};
-
-export default function LifestylePage() {
-  return <LifestyleClient />;
+export default async function LifestyleRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const params = new URLSearchParams();
+  params.set('tab', 'lifestyle');
+  if (sp.focus) params.set('focus', String(sp.focus));
+  redirect(`/explore?${params.toString()}`);
 }

@@ -11,8 +11,13 @@ import { BirthForm, type BirthFormValues } from '@/components/BirthForm';
 import { buildCareerMonthlyChart } from '@/lib/lifestyle/career-monthly';
 import { buildWealthCalendar } from '@/lib/lifestyle/wealth-calendar';
 import { buildTalisman } from '@/lib/lifestyle/talisman';
-import { loadSavedSession } from '@/lib/session/explore-storage';
-import { birthFormToInput } from '@/lib/session/explore-storage';
+import { useChart } from '@/contexts/ChartContext';
+import { birthFormToInput, loadSavedSession } from '@/lib/session/explore-storage';
+import { AlgorithmTransparency } from '@/components/explore/AlgorithmTransparency';
+import {
+  careerEnergyBreakdown,
+  wealthScoreBreakdown,
+} from '@/lib/interpretation/transparency';
 type Tab = 'career' | 'wealth' | 'lucky' | 'counsel';
 
 const TABS: { id: Tab; label: string }[] = [
@@ -22,12 +27,21 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'counsel', label: '운명 공동체' },
 ];
 
-export function LifestyleClient() {
+interface LifestyleClientProps {
+  embedded?: boolean;
+}
+
+export function LifestyleClient({ embedded = false }: LifestyleClientProps) {
+  const { chart: sessionChart, compute } = useChart();
   const [tab, setTab] = useState<Tab>('career');
-  const [chart, setChart] = useState<ManseryeokResult | null>(null);
+  const [chart, setChart] = useState<ManseryeokResult | null>(sessionChart);
   const [year, setYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
+    if (sessionChart) {
+      setChart(sessionChart);
+      return;
+    }
     const saved = loadSavedSession();
     if (!saved?.input) return;
     try {
@@ -35,7 +49,7 @@ export function LifestyleClient() {
     } catch {
       /* ignore */
     }
-  }, []);
+  }, [sessionChart]);
 
   const career = useMemo(
     () => (chart ? buildCareerMonthlyChart(chart, year) : null),
@@ -45,7 +59,7 @@ export function LifestyleClient() {
   const talisman = useMemo(() => (chart ? buildTalisman(chart) : null), [chart]);
 
   function handleSubmit(input: ManseryeokInput) {
-    setChart(calculateManseryeok(input));
+    setChart(compute(input));
   }
 
   const formInitial: Partial<BirthFormValues> | undefined = chart?.meta.input
@@ -57,19 +71,24 @@ export function LifestyleClient() {
         minute: chart.meta.input.minute ?? 0,
         gender: chart.meta.input.gender,
         yajasi: chart.meta.input.yajasi ?? false,
-        longitude: chart.meta.input.timeCorrection?.longitude ?? 127,
+        unknownTime: chart.meta.input.unknownTime ?? false,
       }
     : undefined;
 
   return (
-    <div className="lifestyle-page">
-      <header className="lifestyle-page__header">
-        <p className="lifestyle-page__eyebrow">LIFESTYLE · CASH-COW</p>
-        <h1>라이프스타일</h1>
-        <p className="lifestyle-page__lead">
-          커리어·재물·행운·공동체 — 사주 좌표를 매일 켜야 하는 이유.
-        </p>
-      </header>
+    <div className={`lifestyle-page${embedded ? ' lifestyle-page--embedded' : ''}`}>
+      {!embedded && (
+        <header className="lifestyle-page__header">
+          <p className="lifestyle-page__eyebrow">LIFESTYLE · CASH-COW</p>
+          <h1>라이프스타일</h1>
+          <p className="lifestyle-page__lead">
+            커리어·재물·행운·공동체 — 사주 좌표를 매일 켜야 하는 이유.
+          </p>
+          <Link href="/explore" className="btn btn--ghost btn--sm">
+            ← 명리 탐색
+          </Link>
+        </header>
+      )}
 
       <section className="lifestyle-page__form">
         <BirthForm onSubmit={handleSubmit} initial={formInitial} />
@@ -92,6 +111,10 @@ export function LifestyleClient() {
 
           {tab === 'career' && career && (
             <section className="lifestyle-panel">
+              <p className="lifestyle-panel__summary">
+                유년 십성·합충 규칙으로 에너지를 산출합니다. 조언은 타이밍 참고용이며, 각 달의
+                「점수 산식」에서 근거를 확인할 수 있습니다.
+              </p>
               <div className="lifestyle-panel__toolbar">
                 <label>
                   연도{' '}
@@ -138,6 +161,7 @@ export function LifestyleClient() {
                         ))}
                       </div>
                     )}
+                    <AlgorithmTransparency breakdown={careerEnergyBreakdown(m)} />
                   </li>
                 ))}
               </ul>
@@ -173,6 +197,7 @@ export function LifestyleClient() {
                   .map((d) => (
                     <li key={d.date}>
                       <strong>{d.date}</strong> — {d.alert}
+                      <AlgorithmTransparency breakdown={wealthScoreBreakdown(d)} />
                     </li>
                   ))}
               </ul>
@@ -195,7 +220,7 @@ export function LifestyleClient() {
                 </p>
                 <a
                   href={talisman.svgDataUrl}
-                  download={`8code-talisman-${talisman.dayPillar}.svg`}
+                  download={`8-bit-talisman-${talisman.dayPillar}.svg`}
                   className="btn btn--primary"
                 >
                   배경화면 다운로드
@@ -211,7 +236,7 @@ export function LifestyleClient() {
             <section className="lifestyle-panel">
               <h2>익명 사주 카운셀링 광장</h2>
               <p className="lifestyle-panel__summary">
-                당신의 8CODE(팔자)를 기반으로 익명 한탄·위로. 비슷한 코드를 가진 사람들이
+                당신의 8-bit(팔자)를 기반으로 익명 한탄·위로. 비슷한 코드를 가진 사람들이
                 모입니다.
               </p>
               <div className="lifestyle-code-card">

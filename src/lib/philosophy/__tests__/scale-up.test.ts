@@ -3,6 +3,7 @@ import { calculateManseryeok } from '@/lib/manseryeok';
 import { buildSynergyReport } from '@/lib/philosophy/synergy';
 import { buildDailyGuide } from '@/lib/philosophy/daily-guide';
 import { TEN_STAR_KEYS, tenStarLabel } from '@/lib/i18n/ten-star-labels';
+import { defaultTimeCorrection } from '@/components/BirthForm';
 import { encodeChartParam, parseChartParam } from '@/lib/session/chart-share';
 
 const sampleA = {
@@ -57,10 +58,23 @@ describe('ten-star i18n', () => {
 
 describe('chart-share', () => {
   it('URL 인코딩·디코딩이 대칭이다', () => {
-    const raw = encodeChartParam({ ...sampleA, yajasi: true, timeCorrection: { longitude: 127 } });
+    const raw = encodeChartParam({ ...sampleA, yajasi: true, timeCorrection: defaultTimeCorrection() });
     const parsed = parseChartParam(raw);
     expect(parsed?.year).toBe(1990);
     expect(parsed?.yajasi).toBe(true);
-    expect(parsed?.timeCorrection?.longitude).toBe(127);
+    expect(parsed?.timeCorrection?.longitude).toBe(defaultTimeCorrection().longitude);
+  });
+
+  it('시간모름 URL 플래그를 복원한다', () => {
+    const raw = encodeChartParam({
+      ...sampleA,
+      hour: 0,
+      minute: 0,
+      unknownTime: true,
+      timeCorrection: defaultTimeCorrection(),
+    });
+    expect(raw).toContain('-u1');
+    const parsed = parseChartParam(raw);
+    expect(parsed?.unknownTime).toBe(true);
   });
 });

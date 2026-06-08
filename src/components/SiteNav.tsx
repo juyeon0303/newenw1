@@ -1,40 +1,48 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/components/LocaleSwitcher';
 import { useLocale } from '@/contexts/LocaleContext';
-import { t } from '@/lib/i18n/ui-strings';
 
-type NavLink =
-  | { href: string; label: string }
-  | { href: string; labelKey: 'nav_synergy' };
+type NavLink = { href: string; label: string; zone?: string };
 
 const links: NavLink[] = [
-  { href: '/', label: '처음' },
-  { href: '/tips', label: '탐구 TIP' },
-  { href: '/analyze', label: '8CODE' },
-  { href: '/synergy', labelKey: 'nav_synergy' },
-  { href: '/lifestyle', label: '라이프' },
-  { href: '/community', label: '커뮤니티' },
+  { href: '/', label: '처음', zone: 'landing' },
+  { href: '/philosophy', label: '사이트 철학', zone: 'philosophy' },
+  { href: '/explore', label: '명리 탐색', zone: 'free' },
+  { href: '/wiki', label: '명리 위키', zone: 'open' },
+  { href: '/community', label: '운명 광장', zone: 'open' },
+  { href: '/premium', label: '프리미엄', zone: 'paid' },
 ];
 
 export function SiteNav() {
   const { locale } = useLocale();
+  const pathname = usePathname();
 
   return (
     <header className="site-nav">
       <Link href="/" className="site-nav__brand">
         <span className="site-nav__mark">8</span>
-        <span>
-          <span className="site-nav__brand-8code">8CODE</span> · 사주 탐구
-        </span>
+        <span className="site-nav__brand-8code">8-bit</span>
       </Link>
       <nav className="site-nav__links">
-        {links.map((item) => (
-          <Link key={item.href} href={item.href} className="site-nav__link">
-            {'labelKey' in item ? t(item.labelKey, locale) : item.label}
-          </Link>
-        ))}
+        {links.map((item) => {
+          const active =
+            pathname === item.href ||
+            (item.href === '/explore' && pathname.startsWith('/explore'));
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`site-nav__link${active ? ' site-nav__link--active' : ''}${
+                item.zone === 'paid' ? ' site-nav__link--premium' : ''
+              }`}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
         <LocaleSwitcher />
       </nav>
     </header>

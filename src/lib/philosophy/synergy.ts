@@ -1,4 +1,4 @@
-import type { ManseryeokResult } from '@/lib/manseryeok';
+import { activeBranches, activeStems, type ManseryeokResult } from '@/lib/manseryeok';
 import type { ElementCount } from '@/lib/manseryeok/compute/monthly-command';
 import {
   detectBranchRelations,
@@ -59,13 +59,11 @@ function collaboratorType(el: keyof ElementCount, locale: Locale): string {
 }
 
 function branchesOf(chart: ManseryeokResult) {
-  const { year, month, day, hour } = chart.pillars;
-  return [year.branch, month.branch, day.branch, hour.branch];
+  return activeBranches(chart);
 }
 
 function stemsOf(chart: ManseryeokResult) {
-  const { year, month, day, hour } = chart.pillars;
-  return [year.stem, month.stem, day.stem, hour.stem];
+  return activeStems(chart);
 }
 
 export function buildSynergyReport(

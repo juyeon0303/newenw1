@@ -1,18 +1,10 @@
 {
-  "name": "8CODE · 사주 탐구",
-  "short_name": "8CODE",
-  "description": "8CODE(에잇코드) — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일",
+  "name": "8-bit",
+  "short_name": "8-bit",
+  "description": "8-bit — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0f0e0c",
-  "theme_color": "#1a1814",
-  "lang": "ko",
-  "icons": [
-    {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "background_color": "#0a0a12",
+  "theme_color": "#0a0a12",
+  "icons": []
 }

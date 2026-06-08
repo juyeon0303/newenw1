@@ -2,9 +2,9 @@
  * 탐구 중요도(경중) 산정 — 고정 규칙
  *
  * 원칙 (전통 명리 읽기 순서를 UI 정렬에만 사용, 해석 단정 아님):
- * 1. 일주(日) > 월주(月) > 시주(時) > 년주(年) — 자아·월령·말년·유년 순
- * 2. 형충(冲·刑·害·破) > 합·회 — 역동·긴장 우선
- * 3. 천간·지지(透·坐) > 지장간(藏) — 겉팔자 우선
+ * 1. 일주(日) > 월주(月) > 시주(時) > 년주(年)
+ * 2. 충·형·파 > 해·원진 > 합·회 — 역동·긴장 우선, 조화는 보조
+ * 3. 천간·지지(透·坐) > 지장간(藏)
  * 4. 일지·일간 기준 신살 > 그 외 기준
  */
 
@@ -17,15 +17,15 @@ export const PRIORITY_CRITERIA = {
   tiers: {
     core: {
       label: '핵심',
-      rule: '일주(日)에 걸린 충·형, 또는 일주 천간·지지 십성(透), 또는 총점 130 이상',
+      rule: '일주(日)에 걸린 충·형, 또는 일주 천간·지지 십성(透), 또는 총점 130 이상(합·해·원진 제외)',
     },
     important: {
       label: '중요',
-      rule: '월주·일주·시주에 걸린 충합·십성·신살, 또는 총점 90–129',
+      rule: '월·일 충·파, 시주 십성, 합·회(상한), 또는 총점 90–129',
     },
     reference: {
       label: '참고',
-      rule: '년주만 해당, 지장간만 해당, 합·회·천라·지망 단독, 또는 총점 90 미만',
+      rule: '해·원진, 년주만 해당, 지장간만, 합·회 단독 약한 경우, 또는 총점 90 미만',
     },
   },
   pillars: {
@@ -40,10 +40,11 @@ export const PRIORITY_CRITERIA = {
     hidden: '지장간 — 잠재, 겉팔자에 없음 (+10, 항상 참고)',
   },
   relations: {
-    order: '충(100) > 형(85) > 해(75) > 파(70) > 원진(62) > 귀문(58) > 합(50) > 회(45) > 천라·지망(40)',
+    order: '충(100) > 형(85) > 파(70) > 해(48) > 원진(32) > 귀문(58) > 합(42) > 회(38) > 천라·지망(40)',
     stemChong: '천간충 — 겉 의도·역할 충돌 (+15)',
-    dayTouch: '일주 관련 시 (+30)',
-    monthDay: '월·일 동시 관련 시 (+18)',
+    dayTouch: '일주 관련 +30 — 충·형·파만',
+    monthDay: '월·일 동시 +18 — 충·형·파만',
+    caps: '합·회 → 핵심 불가(중요 상한) · 해·원진 → 참고 상한',
   },
   spirits: {
     basis: '일지(+40) > 일간(+32) > 월지(+22) > 시지(+18) > 년지(+10)',
@@ -69,15 +70,18 @@ const LAYER: Record<TenStarLayer, number> = {
 const RELATION_BASE: Record<RelationType, number> = {
   충: 100,
   형: 85,
-  해: 75,
+  해: 48,
   파: 70,
-  원진: 62,
+  원진: 32,
   귀문: 58,
-  합: 50,
-  회: 45,
+  합: 42,
+  회: 38,
   천라: 40,
   지망: 40,
 };
+
+/** 일주·월일 가산은 역동 관계만 */
+const DYNAMIC_RELATION: ReadonlySet<RelationType> = new Set(['충', '형', '파']);
 
 const SPIRIT_BASIS: Record<string, number> = {
   일지: 40,
@@ -112,6 +116,11 @@ function tierFromScore(score: number): ExploreTier {
   if (score >= TIER_CORE) return 'core';
   if (score >= TIER_IMPORTANT) return 'important';
   return 'reference';
+}
+
+function capTier(tier: ExploreTier, max: ExploreTier): ExploreTier {
+  const rank: Record<ExploreTier, number> = { core: 3, important: 2, reference: 1 };
+  return rank[tier] > rank[max] ? max : tier;
 }
 
 /** 지장간은 규칙상 항상 참고 */
@@ -161,33 +170,43 @@ export function scoreRelation(
 
   const hasDay = uniq.includes('day');
   const hasMonth = uniq.includes('month');
+  const isDynamic = DYNAMIC_RELATION.has(type);
 
-  if (hasDay) {
+  if (hasDay && isDynamic) {
     score += 30;
-    reasons.push('일주 관련 +30');
+    reasons.push('일주 충·형·파 +30');
   }
-  if (hasDay && hasMonth) {
+  if (hasDay && hasMonth && isDynamic) {
     score += 18;
-    reasons.push('월·일 동시 +18');
+    reasons.push('월·일 충·형·파 +18');
   }
 
   let tier = tierFromScore(score);
 
-  // 규칙 오버라이드
   if (hasDay && (type === '충' || type === '형')) {
     tier = 'core';
     reasons.push('일주 충·형 → 핵심');
-  } else if (hasDay && tier === 'reference') {
-    tier = 'important';
+  } else if (hasDay && type === '파') {
+    tier = capTier(tier, 'important');
+    if (tier === 'important') reasons.push('일주 파 → 중요');
   }
 
-  if (!hasDay && !hasMonth && !uniq.includes('hour') && type === '합') {
+  if (type === '합' || type === '회') {
+    tier = capTier(tier, 'important');
+    reasons.push('합·회 → 핵심 불가(중요 상한)');
+    if (!hasDay && !hasMonth && !uniq.includes('hour')) {
+      tier = 'reference';
+      reasons.push('년주만 합·회 → 참고');
+    }
+  }
+
+  if (type === '해' || type === '원진') {
     tier = 'reference';
-    reasons.push('년주만 합 → 참고');
+    reasons.push('해·원진 → 참고 상한');
   }
 
   if (type === '천라' || type === '지망') {
-    tier = tier === 'core' ? 'important' : tier;
+    tier = capTier(tier, 'important');
   }
 
   return { score, tier, reason: reasons.join(' · ') };

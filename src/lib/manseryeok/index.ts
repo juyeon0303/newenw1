@@ -48,6 +48,8 @@ export interface ManseryeokInput {
   gender: 'male' | 'female';
   /** 야자시 적용 — true면 23:00~23:59도 당일 일주 (Lunar sect2) */
   yajasi?: boolean;
+  /** 출생 시각 미상 — 년·월·일주(삼주)만 산출, 시주·시간 의존 분석 제외 */
+  unknownTime?: boolean;
   timeCorrection?: TimeCorrectionOptions;
 }
 
@@ -62,6 +64,8 @@ export interface HiddenStemDetail {
 export interface PillarDetail {
   slot: PillarSlot;
   slotKo: string;
+  /** 시주 미산출 시 true */
+  unknown?: boolean;
   pillar: string;
   stem: HS;
   branch: EB;
@@ -122,6 +126,8 @@ export interface ManseryeokResult {
     lunarDate: string;
     gender: string;
     yajasi: boolean;
+    /** 출생 시각을 모름 — 삼주 기준 */
+    timeUnknown: boolean;
   };
   pillars: {
     year: PillarDetail;
@@ -147,6 +153,59 @@ export interface ManseryeokResult {
     startLuckAge: number;
     startLuckDate: string;
     currentDaewoonIndex: number;
+    /** 시간모름일 때 대운·세운은 정오(12:00) 기준 잠정값 */
+    provisional?: boolean;
+  };
+}
+
+/** 삼주만 확정된 차트인지 */
+export function isTimeUnknown(input: ManseryeokInput | ManseryeokResult): boolean {
+  if ('meta' in input) return input.meta.timeUnknown;
+  return input.unknownTime === true;
+}
+
+/** 분석에 쓸 지지 — 시간모름이면 삼주만 */
+export function activeBranches(chart: ManseryeokResult): EB[] {
+  const { year, month, day, hour } = chart.pillars;
+  if (chart.meta.timeUnknown || hour.unknown) {
+    return [year.branch, month.branch, day.branch];
+  }
+  return [year.branch, month.branch, day.branch, hour.branch];
+}
+
+/** 분석에 쓸 천간 — 시간모름이면 삼주만 */
+export function activeStems(chart: ManseryeokResult): HS[] {
+  const { year, month, day, hour } = chart.pillars;
+  if (chart.meta.timeUnknown || hour.unknown) {
+    return [year.stem, month.stem, day.stem];
+  }
+  return [year.stem, month.stem, day.stem, hour.stem];
+}
+
+function buildUnknownHourPillar(): PillarDetail {
+  return {
+    slot: 'hour',
+    slotKo: '시주',
+    unknown: true,
+    pillar: '??',
+    stem: '甲',
+    branch: '子',
+    stemKo: '?',
+    branchKo: '?',
+    stemTenStar: '',
+    stemTenStarKo: '',
+    branchTenStar: '',
+    branchTenStarKo: '',
+    hiddenStems: [],
+    stageBong: '',
+    stageBongKo: '—',
+    stageGeo: '',
+    stageGeoKo: '—',
+    naphae: '—',
+    voidByDay: false,
+    voidByYear: false,
+    spirit12: [],
+    branchRelations: [],
   };
 }
 
@@ -162,26 +221,34 @@ function koTerrain(name: string): string {
   return TERRAIN_KO[name] ?? name;
 }
 
-function buildSpiritContext(pillars: Record<PillarSlot, PillarDetail>): SpiritContext {
+function buildSpiritContext(
+  pillars: Record<PillarSlot, PillarDetail>,
+  timeUnknown: boolean,
+): SpiritContext {
   const { year, month, day, hour } = pillars;
+  const threePillars = [
+    { stem: year.stem, branch: year.branch },
+    { stem: month.stem, branch: month.branch },
+    { stem: day.stem, branch: day.branch },
+  ];
+  const threeBranches: EB[] = [year.branch, month.branch, day.branch];
+  const threeStems: HS[] = [year.stem, month.stem, day.stem];
+
   return {
     dayStem: day.stem,
     dayBranch: day.branch,
     yearBranch: year.branch,
     monthBranch: month.branch,
-    hourBranch: hour.branch,
-    pillars: [
-      { stem: year.stem, branch: year.branch },
-      { stem: month.stem, branch: month.branch },
-      { stem: day.stem, branch: day.branch },
-      { stem: hour.stem, branch: hour.branch },
-    ],
+    hourBranch: timeUnknown ? day.branch : hour.branch,
+    pillars: timeUnknown
+      ? threePillars
+      : [...threePillars, { stem: hour.stem, branch: hour.branch }],
     dayPillar: day.pillar,
     yearPillar: year.pillar,
     monthPillar: month.pillar,
-    hourPillar: hour.pillar,
-    allBranches: [year.branch, month.branch, day.branch, hour.branch],
-    allStems: [year.stem, month.stem, day.stem, hour.stem],
+    hourPillar: timeUnknown ? '??' : hour.pillar,
+    allBranches: timeUnknown ? threeBranches : [...threeBranches, hour.branch],
+    allStems: timeUnknown ? threeStems : [...threeStems, hour.stem],
   };
 }
 
@@ -293,15 +360,19 @@ function iterateDaewoon(
 export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
   const {
     year, month, day, hour, minute = 0, second = 0,
-    gender, yajasi = false, timeCorrection = {},
+    gender, yajasi = false, unknownTime = false, timeCorrection = {},
   } = input;
 
-  LunarHour.provider = yajasi
+  const effectiveYajasi = unknownTime ? false : yajasi;
+  const birthHour = unknownTime ? 12 : hour;
+  const birthMinute = unknownTime ? 0 : minute;
+
+  LunarHour.provider = effectiveYajasi
     ? new LunarSect2EightCharProvider()
     : new DefaultEightCharProvider();
 
   const corrected = correctBirthTime(
-    { year, month, day, hour, minute, second },
+    { year, month, day, hour: birthHour, minute: birthMinute, second },
     timeCorrection,
   );
 
@@ -320,29 +391,51 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
   const yearP = eightChar.getYear().getName();
   const monthP = eightChar.getMonth().getName();
   const dayP = eightChar.getDay().getName();
-  const hourP = eightChar.getHour().getName();
 
   const dayMaster = eightChar.getDay().getHeavenStem().getName() as HS;
   const yearBranch = eightChar.getYear().getEarthBranch().getName() as EB;
   const dayBranch = eightChar.getDay().getEarthBranch().getName() as EB;
   const monthBranch = eightChar.getMonth().getEarthBranch().getName() as EB;
-  const hourBranch = eightChar.getHour().getEarthBranch().getName() as EB;
 
   const voidByDay = getVoidBranches(dayP);
   const voidByYear = getVoidBranches(yearP);
-  const allBranches: EB[] = [yearBranch, monthBranch, dayBranch, hourBranch];
-  const allStems: HS[] = [
-    eightChar.getYear().getHeavenStem().getName() as HS,
-    eightChar.getMonth().getHeavenStem().getName() as HS,
-    dayMaster,
-    eightChar.getHour().getHeavenStem().getName() as HS,
-  ];
+  const allBranches: EB[] = unknownTime
+    ? [yearBranch, monthBranch, dayBranch]
+    : [
+        yearBranch,
+        monthBranch,
+        dayBranch,
+        eightChar.getHour().getEarthBranch().getName() as EB,
+      ];
+  const allStems: HS[] = unknownTime
+    ? [
+        eightChar.getYear().getHeavenStem().getName() as HS,
+        eightChar.getMonth().getHeavenStem().getName() as HS,
+        dayMaster,
+      ]
+    : [
+        eightChar.getYear().getHeavenStem().getName() as HS,
+        eightChar.getMonth().getHeavenStem().getName() as HS,
+        dayMaster,
+        eightChar.getHour().getHeavenStem().getName() as HS,
+      ];
 
   const pillars = {
     year: buildPillar('year', yearP, dayMaster, voidByDay, voidByYear, yearBranch, dayBranch, allBranches),
     month: buildPillar('month', monthP, dayMaster, voidByDay, voidByYear, yearBranch, dayBranch, allBranches),
     day: buildPillar('day', dayP, dayMaster, voidByDay, voidByYear, yearBranch, dayBranch, allBranches),
-    hour: buildPillar('hour', hourP, dayMaster, voidByDay, voidByYear, yearBranch, dayBranch, allBranches),
+    hour: unknownTime
+      ? buildUnknownHourPillar()
+      : buildPillar(
+          'hour',
+          eightChar.getHour().getName(),
+          dayMaster,
+          voidByDay,
+          voidByYear,
+          yearBranch,
+          dayBranch,
+          allBranches,
+        ),
   };
 
   const hiddenAll = Object.values(pillars).flatMap((p) => p.hiddenStems.map((h) => h.stem));
@@ -396,7 +489,8 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
       correctedTime: corrected,
       lunarDate: lunarHour.toString(),
       gender: gender === 'male' ? '남' : '여',
-      yajasi,
+      yajasi: effectiveYajasi,
+      timeUnknown: unknownTime,
     },
     pillars,
     dayMaster: {
@@ -415,7 +509,7 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
       dangryeong: mc.dangryeong,
       dangryeongKo: ELEMENT_KO[mc.dangryeong],
     },
-    extraSpirits: computeExtraSpirits(buildSpiritContext(pillars)),
+    extraSpirits: computeExtraSpirits(buildSpiritContext(pillars, unknownTime)),
     daewoon,
     sewoon,
     wolwoon,
@@ -425,6 +519,7 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
       startLuckAge: childLimit.getYearCount(),
       startLuckDate: childLimit.getEndTime().toString(),
       currentDaewoonIndex: activeIdx,
+      provisional: unknownTime,
     },
   };
 }

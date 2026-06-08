@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import type { ManseryeokInput } from '@/lib/manseryeok';
+import { SEOUL_LONGITUDE } from '@/lib/manseryeok/time/correction';
 
 export interface BirthFormValues {
   year: number;
@@ -11,7 +12,7 @@ export interface BirthFormValues {
   minute: number;
   gender: 'male' | 'female';
   yajasi: boolean;
-  longitude: number;
+  unknownTime: boolean;
 }
 
 const DEFAULT: BirthFormValues = {
@@ -22,8 +23,30 @@ const DEFAULT: BirthFormValues = {
   minute: 0,
   gender: 'male',
   yajasi: false,
-  longitude: 126.978,
+  unknownTime: false,
 };
+
+export function defaultTimeCorrection() {
+  return {
+    longitude: SEOUL_LONGITUDE,
+    applyEquationOfTime: true,
+    applyDst: true,
+  } as const;
+}
+
+export function birthValuesToInput(v: BirthFormValues): ManseryeokInput {
+  return {
+    year: v.year,
+    month: v.month,
+    day: v.day,
+    hour: v.unknownTime ? 0 : v.hour,
+    minute: v.unknownTime ? 0 : v.minute,
+    gender: v.gender,
+    yajasi: v.unknownTime ? false : v.yajasi,
+    unknownTime: v.unknownTime,
+    timeCorrection: defaultTimeCorrection(),
+  };
+}
 
 interface Props {
   onSubmit: (input: ManseryeokInput) => void;
@@ -35,20 +58,7 @@ export function BirthForm({ onSubmit, initial }: Props) {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    onSubmit({
-      year: v.year,
-      month: v.month,
-      day: v.day,
-      hour: v.hour,
-      minute: v.minute,
-      gender: v.gender,
-      yajasi: v.yajasi,
-      timeCorrection: {
-        longitude: v.longitude,
-        applyEquationOfTime: true,
-        applyDst: true,
-      },
-    });
+    onSubmit(birthValuesToInput(v));
   }
 
   return (
@@ -87,27 +97,31 @@ export function BirthForm({ onSubmit, initial }: Props) {
             required
           />
         </label>
-        <label>
-          <span>시</span>
-          <input
-            type="number"
-            min={0}
-            max={23}
-            value={v.hour}
-            onChange={(e) => setV({ ...v, hour: +e.target.value })}
-            required
-          />
-        </label>
-        <label>
-          <span>분</span>
-          <input
-            type="number"
-            min={0}
-            max={59}
-            value={v.minute}
-            onChange={(e) => setV({ ...v, minute: +e.target.value })}
-          />
-        </label>
+        {!v.unknownTime && (
+          <>
+            <label>
+              <span>시</span>
+              <input
+                type="number"
+                min={0}
+                max={23}
+                value={v.hour}
+                onChange={(e) => setV({ ...v, hour: +e.target.value })}
+                required
+              />
+            </label>
+            <label>
+              <span>분</span>
+              <input
+                type="number"
+                min={0}
+                max={59}
+                value={v.minute}
+                onChange={(e) => setV({ ...v, minute: +e.target.value })}
+              />
+            </label>
+          </>
+        )}
       </div>
 
       <div className="birth-form__row">
@@ -132,22 +146,26 @@ export function BirthForm({ onSubmit, initial }: Props) {
         <label className="birth-form__check">
           <input
             type="checkbox"
-            checked={v.yajasi}
-            onChange={(e) => setV({ ...v, yajasi: e.target.checked })}
+            checked={v.unknownTime}
+            onChange={(e) => setV({ ...v, unknownTime: e.target.checked, yajasi: false })}
           />
-          야자시 적용
+          시간모름
         </label>
+        {!v.unknownTime && (
+          <label className="birth-form__check">
+            <input
+              type="checkbox"
+              checked={v.yajasi}
+              onChange={(e) => setV({ ...v, yajasi: e.target.checked })}
+            />
+            야자시 적용
+          </label>
+        )}
       </div>
 
-      <label className="birth-form__full">
-        <span>출생지 경도 (서울 ≈ 127, 기본 보정)</span>
-        <input
-          type="number"
-          step={0.001}
-          value={v.longitude}
-          onChange={(e) => setV({ ...v, longitude: +e.target.value })}
-        />
-      </label>
+      {v.unknownTime && (
+        <p className="birth-form__hint">년·월·일주(삼주)만 산출합니다. 시주·대운은 시간 확인 후 다시 보세요.</p>
+      )}
 
       <button type="submit" className="btn btn--primary">
         팔자 산출

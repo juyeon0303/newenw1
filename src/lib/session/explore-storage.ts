@@ -1,4 +1,4 @@
-import type { BirthFormValues } from '@/components/BirthForm';
+import { birthValuesToInput, type BirthFormValues } from '@/components/BirthForm';
 import type { ManseryeokInput } from '@/lib/manseryeok';
 
 const SESSION_KEY = 'saju-explore-session';
@@ -77,6 +77,11 @@ export function saveSession(session: Omit<SavedSession, 'version' | 'savedAt'>):
   localStorage.setItem(SESSION_KEY, JSON.stringify(payload));
 }
 
+export function clearSavedSession(): void {
+  if (!isBrowser()) return;
+  localStorage.removeItem(SESSION_KEY);
+}
+
 export function loadChartData(fingerprint: string): ChartExploreData {
   if (!isBrowser()) return defaultChartData();
   try {
@@ -103,18 +108,8 @@ export function saveChartData(fingerprint: string, data: ChartExploreData): void
 }
 
 export function birthFormToInput(v: BirthFormValues): ManseryeokInput {
-  return {
-    year: v.year,
-    month: v.month,
-    day: v.day,
-    hour: v.hour,
-    minute: v.minute,
-    gender: v.gender,
-    yajasi: v.yajasi,
-    timeCorrection: {
-      longitude: v.longitude,
-      applyEquationOfTime: true,
-      applyDst: true,
-    },
-  };
+  return birthValuesToInput({
+    ...v,
+    unknownTime: v.unknownTime ?? false,
+  });
 }

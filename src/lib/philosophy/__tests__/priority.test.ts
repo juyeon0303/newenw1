@@ -60,6 +60,25 @@ describe('scoreRelation', () => {
   it('년주만 합이면 참고', () => {
     expect(scoreRelation('합', 'branch', ['year']).tier).toBe('reference');
   });
+
+  it('월·일 반합(午未 등)은 핵심이 아니라 중요 이하', () => {
+    const hap = scoreRelation('합', 'branch', ['month', 'day']);
+    expect(hap.tier).not.toBe('core');
+    expect(['important', 'reference']).toContain(hap.tier);
+  });
+
+  it('월·일 해·원진은 참고 상한', () => {
+    expect(scoreRelation('해', 'branch', ['month', 'day']).tier).toBe('reference');
+    expect(scoreRelation('원진', 'branch', ['month', 'day']).tier).toBe('reference');
+  });
+
+  it('일주 충은 해·원진보다 훨씬 높다', () => {
+    const chong = scoreRelation('충', 'branch', ['day', 'hour']);
+    const hae = scoreRelation('해', 'branch', ['month', 'day']);
+    expect(chong.tier).toBe('core');
+    expect(chong.score).toBeGreaterThan(hae.score);
+    expect(hae.tier).toBe('reference');
+  });
 });
 
 describe('scoreSpirit', () => {
@@ -95,5 +114,22 @@ describe('김성모 팔자 통합', () => {
   it('overview 최상위는 형충', () => {
     expect(bundle.overview[0].category).toBe('relation');
     expect(bundle.overview[0].tier).toBe('core');
+  });
+
+  it('午未합·未子해·未子원진은 핵심이 아니다', () => {
+    for (const entry of bundle.relationByKey.values()) {
+      const label = entry.hits[0].displayLabel;
+      if (
+        label.includes('午未합') ||
+        label.includes('未午합') ||
+        label.includes('未子해') ||
+        label.includes('未子원진')
+      ) {
+        expect(entry.tier).not.toBe('core');
+      }
+      if (label.includes('未子해') || label.includes('未子원진')) {
+        expect(entry.tier).toBe('reference');
+      }
+    }
   });
 });

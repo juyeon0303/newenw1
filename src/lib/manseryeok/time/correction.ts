@@ -8,6 +8,9 @@
 /** 천을귀인 앱 기준 자오선 (동경 127.5°) */
 export const CHEONEUL_STANDARD_MERIDIAN = 127.5;
 
+/** 기본 출생지 — 서울 (동경) */
+export const SEOUL_LONGITUDE = 126.978;
+
 /** KST 표준 자오선 (동경 135°) — 시계가 기준으로 하는 경도 */
 export const KST_STANDARD_MERIDIAN = 135;
 
@@ -21,7 +24,7 @@ export interface BirthDateTime {
 }
 
 export interface TimeCorrectionOptions {
-  /** 출생지 경도 (동경). 기본: 서울 126.978 */
+  /** 출생지 경도 (동경). 미지정 시 서울 */
   longitude?: number;
   /** 균시차 적용 여부. 기본 true */
   applyEquationOfTime?: boolean;
@@ -125,7 +128,7 @@ export function correctBirthTime(
   options: TimeCorrectionOptions = {},
 ): CorrectedTimeResult {
   const {
-    longitude = 126.978,
+    longitude = SEOUL_LONGITUDE,
     applyEquationOfTime = true,
     applyDst = true,
   } = options;

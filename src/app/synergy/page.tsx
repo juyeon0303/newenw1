@@ -1,15 +1,14 @@
-import { Suspense } from 'react';
-import { SynergyClient } from '@/components/SynergyClient';
+import { redirect } from 'next/navigation';
 
-export const metadata = {
-  title: '시너지',
-  description: '두 팔자의 오행·관계 시너지와 귀인 매칭.',
-};
-
-export default function SynergyPage() {
-  return (
-    <Suspense fallback={<p className="synergy-muted">…</p>}>
-      <SynergyClient />
-    </Suspense>
-  );
+export default async function SynergyRedirect({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const params = new URLSearchParams();
+  params.set('tab', 'synergy');
+  if (sp.a) params.set('a', String(sp.a));
+  if (sp.b) params.set('b', String(sp.b));
+  redirect(`/explore?${params.toString()}`);
 }

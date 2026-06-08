@@ -99,6 +99,7 @@ function collectTenStarHits(chart: ManseryeokResult): { primary: TenStarHit[]; h
 
   for (const slot of slots) {
     const p: PillarDetail = chart.pillars[slot];
+    if (p.unknown) continue;
 
     if (p.stemTenStarKo && !(slot === 'day' && p.stemTenStarKo === '비견')) {
       primary.push({

@@ -48,6 +48,16 @@ function PillarColumn({
     ? formatTenStarDisplay(p.branchTenStarKo, locale)
     : p.branchTenStarKo;
 
+  if (p.unknown) {
+    return (
+      <div className="pillar-col pillar-col--unknown">
+        <div className="pillar-col__label">{p.slotKo}</div>
+        <div className="pillar-col__unknown-label">시간모름</div>
+        <p className="pillar-col__unknown-note">시주 미산출</p>
+      </div>
+    );
+  }
+
   return (
     <div className="pillar-col">
       <div className="pillar-col__label">{p.slotKo}</div>
@@ -97,10 +107,14 @@ export function ManseryeokChart({ chart }: Props) {
     <div className="chart">
       <div className="chart__meta">
         <span>{chart.meta.lunarDate}</span>
-        <span>
-          보정 {chart.meta.correctedTime.totalCorrectionMinutes > 0 ? '+' : ''}
-          {Math.round(chart.meta.correctedTime.totalCorrectionMinutes)}분
-        </span>
+        {chart.meta.timeUnknown ? (
+          <span className="chart__time-unknown">시간모름 · 삼주 기준</span>
+        ) : (
+          <span>
+            보정 {chart.meta.correctedTime.totalCorrectionMinutes > 0 ? '+' : ''}
+            {Math.round(chart.meta.correctedTime.totalCorrectionMinutes)}분
+          </span>
+        )}
         <span>월령 {chart.monthCommand.saenglingKo}({chart.monthCommand.dangryeongKo})</span>
       </div>
 
@@ -134,7 +148,15 @@ export function ManseryeokChart({ chart }: Props) {
       </div>
 
       <details className="chart__luck">
-        <summary>대운 · 세운 ({chart.luckMeta.daewoonSu}세起, {chart.luckMeta.isReverse ? '역행' : '順行'})</summary>
+        <summary>
+          대운 · 세운 ({chart.luckMeta.daewoonSu}세起, {chart.luckMeta.isReverse ? '역행' : '順行'})
+          {chart.luckMeta.provisional ? ' · 잠정' : ''}
+        </summary>
+        {chart.luckMeta.provisional && (
+          <p className="chart__provisional-note">
+            출생 시각 미상 — 대운·세운은 정오(12:00) 기준 잠정값입니다. 시간 확인 후 다시 산출하세요.
+          </p>
+        )}
         <div className="luck-grid">
           {chart.daewoon.map((d) => (
             <div key={d.startAge} className="luck-cell">

@@ -13,8 +13,8 @@ import {
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: '탐구 커뮤니티',
-  description: '정답 없이 탐구하다 떠오른 기억·질문을 나누는 곳',
+  title: '운명 광장',
+  description: '8-bit를 달고 익명으로 고민·밈·질문을 나누는 집단지성 공간.',
 };
 
 type SearchParams = Promise<{ category?: string }>;
@@ -35,15 +35,15 @@ export default async function CommunityPage({
   return (
     <div className="community-page">
       <header className="community-page__header">
-        <p className="community-page__eyebrow">探究 · 共有</p>
-        <h1>탐구 커뮤니티</h1>
+        <p className="community-page__eyebrow">OPEN · UGC</p>
+        <h1>운명 광장</h1>
         <p className="community-page__intro">{COMMUNITY_INTRO}</p>
         <div className="community-page__actions">
           <Link href="/community/new" className="btn btn--primary">
             글 쓰기
           </Link>
-          <Link href="/analyze" className="btn btn--ghost">
-            8CODE 분석
+          <Link href="/explore" className="btn btn--ghost">
+            내 8-bit 보기
           </Link>
         </div>
       </header>

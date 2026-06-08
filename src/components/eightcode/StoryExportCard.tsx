@@ -34,7 +34,7 @@ export function StoryExportCard({ chart }: Props) {
         useCORS: true,
       });
       const link = document.createElement('a');
-      link.download = `8code-${chart.pillars.day.pillar}.png`;
+      link.download = `8-bit-${chart.pillars.day.pillar}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } finally {
@@ -54,8 +54,7 @@ export function StoryExportCard({ chart }: Props) {
           }}
         >
           <div>
-            <p className="text-4xl font-bold tracking-[0.35em] text-white/90">8CODE</p>
-            <p className="text-2xl text-white/40 mt-2">에잇코드</p>
+            <p className="text-4xl font-bold tracking-[0.35em] text-white/90">8-bit</p>
           </div>
 
           <div className="space-y-8">
@@ -80,7 +79,7 @@ export function StoryExportCard({ chart }: Props) {
             </p>
           </div>
 
-          <p className="text-xl text-white/30">8CODE · 사주 탐구</p>
+          <p className="text-xl text-white/30">8-bit</p>
         </div>
       </div>
 

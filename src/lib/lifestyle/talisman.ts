@@ -80,7 +80,7 @@ export function buildTalisman(chart: ManseryeokResult): TalismanDesign {
   <text x="540" y="760" text-anchor="middle" font-size="200" fill="${p.neon}" font-family="serif" filter="url(#glow)">${p.symbol}</text>
   <text x="540" y="980" text-anchor="middle" font-size="42" fill="${p.secondary}" font-family="sans-serif">${p.mantra}</text>
   <text x="540" y="1100" text-anchor="middle" font-size="36" fill="#ffffff88" font-family="sans-serif">${dayPillar}</text>
-  <text x="540" y="1750" text-anchor="middle" font-size="28" fill="#ffffff44" font-family="sans-serif">8CODE · 사주 탐구</text>
+  <text x="540" y="1750" text-anchor="middle" font-size="28" fill="#ffffff44" font-family="sans-serif">8-bit</text>
 </svg>`;
 
   const svgDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
