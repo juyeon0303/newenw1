@@ -4,6 +4,7 @@ export const COMMUNITY_CATEGORIES = [
   { id: 'reflect', label: '성찰' },
   { id: 'luck', label: '월령·운' },
   { id: 'relations', label: '형충·관계' },
+  { id: 'counsel', label: '운명 공동체' },
   { id: 'other', label: '기타' },
 ] as const;
 

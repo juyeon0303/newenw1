@@ -42,8 +42,8 @@ export default async function CommunityPage({
           <Link href="/community/new" className="btn btn--primary">
             글 쓰기
           </Link>
-          <Link href="/explore" className="btn btn--ghost">
-            팔자 탐구로
+          <Link href="/analyze" className="btn btn--ghost">
+            8CODE 분석
           </Link>
         </div>
       </header>

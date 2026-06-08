@@ -6,31 +6,32 @@ import {
   TWIN_PARADOX_HEADLINE,
   SITE_PHILOSOPHY_HEADLINE,
   SAJU_DETERMINISM,
-  EXPLORE_PHILOSOPHY,
   HOME_CATCHPHRASE,
   HOME_HERO_INVITE,
   HOME_PROBE_NOTE,
   HOME_READING_NOTE,
 } from '@/lib/philosophy/content';
-import { ResumeExploreBanner } from '@/components/ResumeExploreBanner';
 
 export default function HomePage() {
   return (
     <div className="home">
-      <ResumeExploreBanner />
       <section className="hero">
-        <p className="hero__manifesto">{SAJU_MANIFESTO}</p>
-        <p className="hero__eyebrow">非統計 · 探究 · 共有</p>
-        <h1>{HOME_CATCHPHRASE}</h1>
-        <p className="hero__sub">{HOME_HERO_INVITE}</p>
-        <div className="hero__actions">
-          <Link href="/explore" className="btn btn--primary">
-            팔자 탐구하기
-          </Link>
-          <Link href="/community" className="btn btn--ghost">
-            탐구 커뮤니티
-          </Link>
+        <div className="hero-shell">
+          <div className="hero-shell__inner">
+            <p className="hero__eyebrow">非統計 · 探究 · 共有</p>
+            <h1>{HOME_CATCHPHRASE}</h1>
+            <p className="hero__sub">{HOME_HERO_INVITE}</p>
+            <div className="hero__actions">
+              <Link href="/analyze" className="btn btn--primary">
+                8CODE 분석
+              </Link>
+              <Link href="/community" className="btn btn--ghost">
+                커뮤니티
+              </Link>
+            </div>
+          </div>
         </div>
+        <p className="hero__manifesto">{SAJU_MANIFESTO}</p>
       </section>
 
       <section className="home-lead" aria-labelledby="home-lead-heading">
@@ -56,10 +57,6 @@ export default function HomePage() {
         </h2>
         <h3 className="site-philosophy__topic">{SAJU_DETERMINISM.title}</h3>
         <div className="site-philosophy__body">{SAJU_DETERMINISM.body}</div>
-        <h3 className="site-philosophy__topic site-philosophy__topic--sub">
-          {EXPLORE_PHILOSOPHY.title}
-        </h3>
-        <div className="site-philosophy__body">{EXPLORE_PHILOSOPHY.body}</div>
       </section>
 
       <section className="home-reading" aria-labelledby="home-probe-heading">

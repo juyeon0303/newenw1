@@ -17,8 +17,8 @@ export default function TipsPage() {
           <span>탐구 TIP</span>
         </h1>
         <p className="tips-page__subtitle">앞으로 더 추가될 예정입니다.</p>
-        <Link href="/explore" className="btn btn--primary">
-          팔자 탐구하기
+        <Link href="/analyze" className="btn btn--primary">
+          8CODE 분석
         </Link>
       </header>
 

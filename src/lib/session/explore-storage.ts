@@ -37,7 +37,7 @@ export interface SavedSession {
   version: 1;
   savedAt: number;
   input: BirthFormValues;
-  lastTab: 'chart' | 'explore' | 'journal';
+  lastTab: 'chart' | 'explore' | 'journal' | 'daily';
 }
 
 function defaultChartData(): ChartExploreData {

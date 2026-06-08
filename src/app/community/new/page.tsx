@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { NewPostForm } from '@/components/community/NewPostForm';
 
 export const metadata = {
@@ -14,7 +15,9 @@ export default function CommunityNewPage() {
           ← 목록
         </Link>
       </header>
-      <NewPostForm />
+      <Suspense fallback={<p className="community-page__empty">…</p>}>
+        <NewPostForm />
+      </Suspense>
     </div>
   );
 }

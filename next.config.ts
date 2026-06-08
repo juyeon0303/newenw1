@@ -6,7 +6,10 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   eslint: { ignoreDuringBuilds: true },
   async redirects() {
-    return [{ source: '/about', destination: '/', permanent: true }];
+    return [
+      { source: '/about', destination: '/', permanent: true },
+      { source: '/explore', destination: '/analyze', permanent: true },
+    ];
   },
 };
 

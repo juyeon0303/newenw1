@@ -1,6 +1,9 @@
 'use client';
 
 import type { ManseryeokResult, PillarDetail } from '@/lib/manseryeok';
+import { useLocale } from '@/contexts/LocaleContext';
+import { formatTenStarDisplay } from '@/lib/i18n/ten-star-labels';
+import type { Locale } from '@/lib/i18n/locale';
 
 const ELEMENT_CLASS: Record<string, string> = {
   木: 'el-wood',
@@ -26,11 +29,29 @@ function branchElement(branch: string): string {
   return map[branch] ?? '土';
 }
 
-function PillarColumn({ p, isDay }: { p: PillarDetail; isDay?: boolean }) {
+function PillarColumn({
+  p,
+  isDay,
+  locale,
+}: {
+  p: PillarDetail;
+  isDay?: boolean;
+  locale: Locale;
+}) {
+  const psych = locale !== 'ko';
+  const stemTen = isDay
+    ? '일간(나)'
+    : psych
+      ? formatTenStarDisplay(p.stemTenStarKo, locale)
+      : p.stemTenStarKo;
+  const branchTen = psych
+    ? formatTenStarDisplay(p.branchTenStarKo, locale)
+    : p.branchTenStarKo;
+
   return (
     <div className="pillar-col">
       <div className="pillar-col__label">{p.slotKo}</div>
-      <div className="pillar-col__ten">{isDay ? '일간(나)' : p.stemTenStarKo}</div>
+      <div className="pillar-col__ten">{stemTen}</div>
       <div className={`pillar-col__stem ${ELEMENT_CLASS[stemElement(p.stem)]}`}>
         {p.stemKo}
         <span className="pillar-col__hanja">{p.stem}</span>
@@ -39,11 +60,11 @@ function PillarColumn({ p, isDay }: { p: PillarDetail; isDay?: boolean }) {
         {p.branchKo}
         <span className="pillar-col__hanja">{p.branch}</span>
       </div>
-      <div className="pillar-col__ten">{p.branchTenStarKo}</div>
+      <div className="pillar-col__ten">{branchTen}</div>
       <div className="pillar-col__meta">
         {p.hiddenStems.map((h) => (
           <span key={`${h.stem}-${h.tenStarKo}`} className="pillar-col__hidden">
-            {h.stemKo}·{h.tenStarKo}
+            {h.stemKo}·{psych ? formatTenStarDisplay(h.tenStarKo, locale) : h.tenStarKo}
           </span>
         ))}
       </div>
@@ -68,6 +89,7 @@ interface Props {
 }
 
 export function ManseryeokChart({ chart }: Props) {
+  const { locale } = useLocale();
   const { year, month, day, hour } = chart.pillars;
   const ec = chart.elementCount;
 
@@ -83,10 +105,10 @@ export function ManseryeokChart({ chart }: Props) {
       </div>
 
       <div className="chart__pillars">
-        <PillarColumn p={hour} />
-        <PillarColumn p={day} isDay />
-        <PillarColumn p={month} />
-        <PillarColumn p={year} />
+        <PillarColumn p={hour} locale={locale} />
+        <PillarColumn p={day} isDay locale={locale} />
+        <PillarColumn p={month} locale={locale} />
+        <PillarColumn p={year} locale={locale} />
       </div>
 
       <div className="chart__summary">

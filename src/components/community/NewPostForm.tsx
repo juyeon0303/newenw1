@@ -1,14 +1,23 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { isValidCategory } from '@/lib/community/validation';
 import { COMMUNITY_CATEGORIES, type CommunityCategoryId } from '@/lib/community/types';
 import { ensureAuthor, loadAuthor } from '@/lib/community/author-session';
 import { CommunityAuthorBar } from './CommunityAuthorBar';
 
 export function NewPostForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [category, setCategory] = useState<CommunityCategoryId>('explore');
+
+  useEffect(() => {
+    const c = searchParams.get('category');
+    if (c && isValidCategory(c)) {
+      setCategory(c as CommunityCategoryId);
+    }
+  }, [searchParams]);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [error, setError] = useState<string | null>(null);
