@@ -42,6 +42,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={`${geistSans.variable} antialiased`}>
         <WakeBridgeFallback />
+        <WakeBridge />
         <script
           dangerouslySetInnerHTML={{
             __html: `if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){});});}`,
@@ -49,7 +50,6 @@ export default function RootLayout({
         />
         <LocaleProvider>
           <ChartProvider>
-            <WakeBridge />
             <SiteNav />
             <main className="main">{children}</main>
             <footer className="footer">

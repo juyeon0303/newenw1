@@ -3249,11 +3249,40 @@ body {
   z-index: 99;
 }
 
-.wake-bridge[data-state='out'],
-#8bit-wake-static[data-state='out'] {
+.wake-bridge--exit {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.42s ease;
+  transition: opacity 0.38s ease;
+}
+
+.wake-bridge__glow--pulse {
+  animation: wake-glow-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes wake-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.95);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+.wake-bridge__mark--pulse {
+  animation: wake-mark-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes wake-mark-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(167, 139, 250, 0);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(167, 139, 250, 0.55);
+  }
 }
 
 .wake-bridge__glow {
@@ -3305,6 +3334,18 @@ body {
   letter-spacing: 0.22em;
   text-transform: none;
   color: rgba(255, 255, 255, 0.42);
+  animation: wake-stage-fade 0.45s ease;
+}
+
+@keyframes wake-stage-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .wake-bridge__glyphs {
@@ -3318,37 +3359,17 @@ body {
   animation: wake-glyph-pulse 2.2s ease-in-out infinite;
 }
 
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(4) {
-  animation-delay: 0.45s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(5) {
-  animation-delay: 0.6s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(6) {
-  animation-delay: 0.75s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(7) {
-  animation-delay: 0.9s;
-}
-.wake-bridge__glyphs--pulse .wake-bridge__glyph:nth-child(8) {
-  animation-delay: 1.05s;
-}
-
 @keyframes wake-glyph-pulse {
   0%,
   100% {
-    opacity: 0.3;
-    transform: translateY(0);
+    opacity: 0.35;
+    transform: translateY(0) scale(0.94);
+    text-shadow: 0 0 8px rgba(167, 139, 250, 0.2);
   }
   50% {
     opacity: 1;
-    transform: translateY(-3px);
+    transform: translateY(-5px) scale(1.06);
+    text-shadow: 0 0 18px rgba(167, 139, 250, 0.65);
   }
 }
 
@@ -3390,6 +3411,7 @@ body {
 .wake-bridge__tip {
   margin-top: 1.35rem;
   text-align: left;
+  animation: wake-stage-fade 0.45s ease;
 }
 
 .wake-bridge__tip-title {

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   WAKE_EARTHLY,
   WAKE_HEAVENLY,
@@ -11,9 +10,11 @@ import {
 
 const TIP_INTERVAL_MS = 4200;
 const STAGE_INTERVAL_MS = 2400;
-const MIN_VISIBLE_MS = 1200;
+const MIN_FAST_MS = 700;
+const MIN_SLOW_MS = 2200;
+const MAX_VISIBLE_MS = 4500;
+const MAX_COLD_MS = 10000;
 const COLD_WAKE_MS = 2800;
-const FAST_RESPONSE_MS = 1500;
 
 function shuffle<T>(items: readonly T[]): T[] {
   const next = [...items];
@@ -24,27 +25,17 @@ function shuffle<T>(items: readonly T[]): T[] {
   return next;
 }
 
-function navTiming(): PerformanceNavigationTiming | undefined {
-  if (typeof performance === 'undefined') return undefined;
-  return performance.getEntriesByType('navigation')[0] as
+function isColdWake(): boolean {
+  if (typeof performance === 'undefined') return false;
+  const nav = performance.getEntriesByType('navigation')[0] as
     | PerformanceNavigationTiming
     | undefined;
+  if (!nav) return false;
+  return nav.responseStart - nav.requestStart > COLD_WAKE_MS;
 }
 
-function shouldShowWakeBridge(): { show: boolean; cold: boolean } {
-  const nav = navTiming();
-  if (!nav) return { show: true, cold: false };
-  const cold = nav.responseStart - nav.requestStart > COLD_WAKE_MS;
-  if (cold) return { show: true, cold: true };
-  const fast = nav.responseEnd - nav.requestStart < FAST_RESPONSE_MS;
-  return { show: !fast, cold: false };
-}
-
-function dismissStaticSplash() {
-  const el = document.getElementById('8bit-wake-static');
-  if (!el) return;
-  el.dataset.state = 'out';
-  window.setTimeout(() => el.remove(), 420);
+function removeStaticSplash() {
+  document.getElementById('8bit-wake-static')?.remove();
 }
 
 export function WakeBridge() {
@@ -57,20 +48,15 @@ export function WakeBridge() {
       ),
     [],
   );
+  const cold = useMemo(() => isColdWake(), []);
 
-  const wakeMode = useMemo(() => shouldShowWakeBridge(), []);
-  const [visible, setVisible] = useState(wakeMode.show);
+  const [visible, setVisible] = useState(true);
   const [stageIndex, setStageIndex] = useState(0);
   const [tipIndex, setTipIndex] = useState(0);
+  const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    if (!wakeMode.show) {
-      dismissStaticSplash();
-      return;
-    }
-
-    const shownAt = performance.now();
-    const minMs = wakeMode.cold ? 3200 : MIN_VISIBLE_MS;
+    removeStaticSplash();
 
     const stageTimer = window.setInterval(() => {
       setStageIndex((i) => (i + 1) % WAKE_STAGES.length);
@@ -80,98 +66,84 @@ export function WakeBridge() {
       setTipIndex((i) => (i + 1) % tips.length);
     }, TIP_INTERVAL_MS);
 
-    const ready = () => {
-      const elapsed = performance.now() - shownAt;
-      const wait = Math.max(0, minMs - elapsed);
+    const started = performance.now();
+    const minMs = cold ? MIN_SLOW_MS : MIN_FAST_MS;
+    const maxMs = cold ? MAX_COLD_MS : MAX_VISIBLE_MS;
+
+    const dismiss = () => {
+      setExiting(true);
       window.setTimeout(() => {
         setVisible(false);
-        dismissStaticSplash();
-      }, wait);
+        removeStaticSplash();
+      }, 380);
     };
 
-    if (document.readyState === 'complete') {
-      ready();
-    } else {
-      window.addEventListener('load', ready, { once: true });
-    }
+    const scheduleDismiss = () => {
+      const elapsed = performance.now() - started;
+      const wait = Math.max(0, minMs - elapsed);
+      return window.setTimeout(dismiss, wait);
+    };
+
+    const minTimer = scheduleDismiss();
+    const safetyTimer = window.setTimeout(dismiss, maxMs);
 
     return () => {
       window.clearInterval(stageTimer);
       window.clearInterval(tipTimer);
-      window.removeEventListener('load', ready);
+      window.clearTimeout(minTimer);
+      window.clearTimeout(safetyTimer);
     };
-  }, [wakeMode.cold, wakeMode.show, tips.length]);
+  }, [cold, tips.length]);
+
+  if (!visible) return null;
 
   const tip = tips[tipIndex];
 
   return (
-    <AnimatePresence>
-      {visible && (
-        <motion.div
-          className="wake-bridge"
-          role="status"
-          aria-live="polite"
-          aria-busy="true"
-          initial={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.45 }}
-        >
-          <div className="wake-bridge__glow" aria-hidden />
-          <div className="wake-bridge__panel">
-            <p className="wake-bridge__brand">
-              <span className="wake-bridge__mark">8</span>
-              8-bit
-            </p>
-            <p className="wake-bridge__stage">{WAKE_STAGES[stageIndex]}</p>
+    <div
+      id="8bit-wake-bridge"
+      className={`wake-bridge${exiting ? ' wake-bridge--exit' : ''}`}
+      role="status"
+      aria-live="polite"
+      aria-busy={!exiting}
+    >
+      <div className="wake-bridge__glow wake-bridge__glow--pulse" aria-hidden />
+      <div className="wake-bridge__panel">
+        <p className="wake-bridge__brand">
+          <span className="wake-bridge__mark wake-bridge__mark--pulse">8</span>
+          8-bit
+        </p>
+        <p className="wake-bridge__stage" key={stageIndex}>
+          {WAKE_STAGES[stageIndex]}
+        </p>
 
-            <div className="wake-bridge__glyphs" aria-hidden>
-              {glyphs.map((g, i) => (
-                <motion.span
-                  key={`${g}-${i}`}
-                  className="wake-bridge__glyph"
-                  animate={{ opacity: [0.25, 1, 0.25], y: [0, -4, 0] }}
-                  transition={{
-                    duration: 2.2,
-                    delay: i * 0.12,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                >
-                  {g}
-                </motion.span>
-              ))}
-            </div>
+        <div className="wake-bridge__glyphs wake-bridge__glyphs--pulse" aria-hidden>
+          {glyphs.map((g, i) => (
+            <span
+              key={`${g}-${i}`}
+              className="wake-bridge__glyph"
+              style={{ animationDelay: `${i * 0.14}s` }}
+            >
+              {g}
+            </span>
+          ))}
+        </div>
 
-            <div className="wake-bridge__bar" aria-hidden>
-              <motion.span
-                className="wake-bridge__bar-fill"
-                animate={{ x: ['-100%', '220%'] }}
-                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              />
-            </div>
+        <div className="wake-bridge__bar" aria-hidden>
+          <span className="wake-bridge__bar-fill wake-bridge__bar-fill--css" />
+        </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={tip.title}
-                className="wake-bridge__tip"
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.35 }}
-              >
-                <p className="wake-bridge__tip-title">{tip.title}</p>
-                <p className="wake-bridge__tip-body">{tip.body}</p>
-              </motion.div>
-            </AnimatePresence>
+        <div className="wake-bridge__tip" key={tip.title}>
+          <p className="wake-bridge__tip-title">{tip.title}</p>
+          <p className="wake-bridge__tip-body">{tip.body}</p>
+        </div>
 
-            {wakeMode.cold && (
-              <p className="wake-bridge__note">
-                무료 서버가 잠에서 깨는 중이에요. 조금만 기다려 주세요.
-              </p>
-            )}
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        {cold && (
+          <p className="wake-bridge__note">
+            무료 서버가 잠에서 깨는 중이에요. 곧 열립니다.
+          </p>
+        )}
+      </div>
+    </div>
   );
 }
