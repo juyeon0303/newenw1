@@ -49,7 +49,8 @@ export function EightCodeBirthForm({
   }
 
   const field =
-    'w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-violet-400/60 focus:ring-1 focus:ring-violet-400/30 transition';
+    'w-full rounded-xl bg-[var(--bg-surface)] border border-white/20 px-4 py-3 text-sm text-white placeholder:text-white/50 outline-none focus:border-violet-400/70 focus:ring-1 focus:ring-violet-400/35 transition';
+  const labelClass = 'text-xs text-[var(--text-secondary)] mb-1.5 block font-medium';
 
   return (
     <motion.form
@@ -61,7 +62,7 @@ export function EightCodeBirthForm({
     >
       <div className="grid grid-cols-3 gap-3">
         <label className="block col-span-1">
-          <span className="text-xs text-white/50 mb-1.5 block">년</span>
+          <span className={labelClass}>년</span>
           <input
             type="number"
             className={field}
@@ -71,7 +72,7 @@ export function EightCodeBirthForm({
           />
         </label>
         <label className="block col-span-1">
-          <span className="text-xs text-white/50 mb-1.5 block">월</span>
+          <span className={labelClass}>월</span>
           <input
             type="number"
             min={1}
@@ -83,7 +84,7 @@ export function EightCodeBirthForm({
           />
         </label>
         <label className="block col-span-1">
-          <span className="text-xs text-white/50 mb-1.5 block">일</span>
+          <span className={labelClass}>일</span>
           <input
             type="number"
             min={1}
@@ -99,7 +100,7 @@ export function EightCodeBirthForm({
       {!unknownTime && (
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
-            <span className="text-xs text-white/50 mb-1.5 block">시</span>
+            <span className={labelClass}>시</span>
             <input
               type="number"
               min={0}
@@ -111,7 +112,7 @@ export function EightCodeBirthForm({
             />
           </label>
           <label className="block">
-            <span className="text-xs text-white/50 mb-1.5 block">분</span>
+            <span className={labelClass}>분</span>
             <input
               type="number"
               min={0}
@@ -133,7 +134,7 @@ export function EightCodeBirthForm({
             className={`flex-1 rounded-xl py-3 text-sm font-medium transition active:scale-[0.98] ${
               gender === g
                 ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/20'
-                : 'bg-white/5 border border-white/10 text-white/60 hover:border-white/20'
+                : 'bg-[var(--bg-surface)] border border-white/20 text-[var(--text-secondary)] hover:border-white/30 hover:text-white'
             }`}
           >
             {g === 'male' ? '남' : '여'}
@@ -141,7 +142,7 @@ export function EightCodeBirthForm({
         ))}
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-white/60 cursor-pointer">
+      <label className="flex items-center gap-2 text-sm text-[var(--text-secondary)] cursor-pointer">
         <input
           type="checkbox"
           checked={unknownTime}

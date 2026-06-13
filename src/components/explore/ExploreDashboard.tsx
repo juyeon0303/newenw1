@@ -33,12 +33,12 @@ export function ExploreDashboard() {
     <>
       <header className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-xs tracking-[0.35em] text-white/40">만세력</p>
-          <h1 className="text-2xl md:text-3xl font-bold mt-1 tracking-wide">
+          <p className="text-xs tracking-[0.35em] text-[var(--text-muted)]">만세력</p>
+          <h1 className="text-2xl md:text-3xl font-bold mt-1 tracking-wide text-[var(--text)]">
             {hour.unknown ? '??' : hour.pillar} · {day.pillar} · {month.pillar} ·{' '}
             {year.pillar}
           </h1>
-          <p className="text-sm text-white/45 mt-1">{chart.meta.lunarDate}</p>
+          <p className="text-sm text-[var(--text-secondary)] mt-1">{chart.meta.lunarDate}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Link href="/" className="btn btn--ghost btn--sm">

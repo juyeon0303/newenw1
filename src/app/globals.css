@@ -5,21 +5,23 @@
 :root {
   --bg-deep: #07070f;
   --bg: #07070f;
-  --bg-elevated: rgba(15, 15, 25, 0.9);
-  --bg-card: rgba(2, 6, 23, 0.72);
-  --glass: rgba(255, 255, 255, 0.06);
-  --glass-border: rgba(255, 255, 255, 0.12);
+  --bg-elevated: #121525;
+  --bg-card: #0f111d;
+  --bg-surface: #161828;
+  --glass: rgba(15, 17, 29, 0.94);
+  --glass-border: rgba(255, 255, 255, 0.16);
   --neon-glow: rgba(168, 85, 247, 0.35);
   --text: #f4f4f8;
-  --text-muted: rgba(255, 255, 255, 0.55);
-  --accent: #c4b5fd;
-  --accent-dim: rgba(255, 255, 255, 0.45);
-  --border: rgba(255, 255, 255, 0.1);
-  --el-wood: #34d399;
-  --el-fire: #fb7185;
-  --el-earth: #fbbf24;
-  --el-metal: #cbd5e1;
-  --el-water: #38bdf8;
+  --text-secondary: #d8d8e2;
+  --text-muted: #b8b8c6;
+  --accent: #d4c4ff;
+  --accent-dim: #c4c4d0;
+  --border: rgba(255, 255, 255, 0.14);
+  --el-wood: #6ee7b7;
+  --el-fire: #fda4af;
+  --el-earth: #fcd34d;
+  --el-metal: #e2e8f0;
+  --el-water: #7dd3fc;
   --font-sans: var(--font-geist-sans), 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', system-ui, sans-serif;
   --font-serif: var(--font-geist-sans), system-ui, sans-serif;
 }
@@ -40,14 +42,15 @@ body {
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 255, 0.25), transparent),
-    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255, 120, 80, 0.12), transparent),
-    radial-gradient(ellipse 50% 30% at 0% 100%, rgba(80, 200, 255, 0.1), transparent),
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 80, 255, 0.14), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 0%, rgba(255, 120, 80, 0.08), transparent),
+    radial-gradient(ellipse 50% 30% at 0% 100%, rgba(80, 200, 255, 0.07), transparent),
     var(--bg-deep);
   color: var(--text);
   font-family: var(--font-sans);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .main {
@@ -65,7 +68,7 @@ body {
   justify-content: space-between;
   padding: 0.85rem 1.25rem;
   border-bottom: 1px solid var(--glass-border);
-  background: rgba(2, 6, 23, 0.55);
+  background: rgba(7, 7, 15, 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   position: sticky;
@@ -574,7 +577,7 @@ body {
 .birth-form input[type='number'] {
   width: 100%;
   padding: 0.65rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: var(--text);
@@ -626,7 +629,7 @@ body {
 .birth-form__full input {
   width: 100%;
   padding: 0.65rem 0.75rem;
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--bg-surface);
   border: 1px solid var(--glass-border);
   border-radius: 12px;
   color: var(--text);
@@ -731,7 +734,7 @@ body {
 }
 
 .pillar-col__ten {
-  color: var(--accent-dim);
+  color: var(--text-secondary);
   font-size: 0.7rem;
   margin: 0.2rem 0;
 }
@@ -747,16 +750,16 @@ body {
 
 .pillar-col__hanja {
   display: block;
-  font-size: 0.65rem;
-  opacity: 0.7;
+  font-size: 0.68rem;
+  color: var(--text-muted);
   font-weight: 400;
 }
 
-.el-wood { background: rgba(90, 154, 110, 0.25); color: #7bc995; }
-.el-fire { background: rgba(196, 92, 74, 0.25); color: #e88878; }
-.el-earth { background: rgba(196, 165, 116, 0.2); color: var(--el-earth); }
-.el-metal { background: rgba(184, 176, 168, 0.15); color: var(--el-metal); }
-.el-water { background: rgba(74, 122, 154, 0.25); color: #7ab0d0; }
+.el-wood { background: rgba(52, 211, 153, 0.22); color: var(--el-wood); }
+.el-fire { background: rgba(251, 113, 133, 0.22); color: var(--el-fire); }
+.el-earth { background: rgba(251, 191, 36, 0.2); color: var(--el-earth); }
+.el-metal { background: rgba(226, 232, 240, 0.14); color: var(--el-metal); }
+.el-water { background: rgba(56, 189, 248, 0.22); color: var(--el-water); }
 
 .pillar-col__meta {
   display: flex;
@@ -859,32 +862,33 @@ body {
 }
 
 .luck-cell {
-  background: var(--bg);
+  background: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0.4rem;
+  border-radius: 6px;
+  padding: 0.45rem 0.35rem;
   text-align: center;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
 }
 
 .luck-cell--active {
-  border-color: rgba(167, 139, 250, 0.55);
-  background: rgba(139, 92, 246, 0.12);
-  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.2);
+  border-color: rgba(167, 139, 250, 0.65);
+  background: rgba(139, 92, 246, 0.2);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.25);
 }
 
 .luck-cell__age {
-  color: var(--accent-dim);
+  color: var(--text-secondary);
 }
 
 .luck-cell__pillar {
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
+  color: var(--text);
 }
 
 .luck-cell__sub {
   color: var(--text-muted);
-  font-size: 0.6rem;
+  font-size: 0.62rem;
 }
 
 .iljin-table-wrap {
@@ -906,23 +910,30 @@ body {
 }
 
 .iljin-table th {
-  color: var(--text-muted);
-  font-weight: 500;
-  font-size: 0.68rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: 0.7rem;
   letter-spacing: 0.06em;
+  background: var(--bg-surface);
+}
+
+.iljin-table td {
+  color: var(--text-secondary);
 }
 
 .iljin-table__pillar {
   font-weight: 600;
   letter-spacing: 0.08em;
+  color: var(--text);
 }
 
 .iljin-table__today {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(139, 92, 246, 0.16);
 }
 
 .iljin-table__today td {
   color: var(--text);
+  font-weight: 500;
 }
 
 /* Explore panel — minimal */
@@ -1825,7 +1836,7 @@ body {
 
 .community-page__intro {
   max-width: 36rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   margin: 0 0 1.25rem;
 }
 
@@ -1856,7 +1867,7 @@ body {
   margin: 0 0 0.85rem;
   font-size: 0.92rem;
   line-height: 1.65;
-  color: var(--text-muted);
+  color: var(--text-secondary);
 }
 
 .community-notice p:last-child {
@@ -1954,7 +1965,7 @@ body {
 .post-card__preview {
   margin: 0;
   font-size: 0.9rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 
@@ -3138,6 +3149,13 @@ body {
   padding-right: 1rem;
 }
 
+.explore-route {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.35);
+}
+
 .site-nav__link--active {
   color: var(--text) !important;
   background: rgba(139, 92, 246, 0.15);
@@ -3191,9 +3209,9 @@ body {
 .landing-page__inner {
   border-radius: 23px;
   padding: 2.5rem 2rem;
-  background: rgba(2, 6, 23, 0.88);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
 }
 
 .landing-page__title {
@@ -3232,7 +3250,7 @@ body {
   text-align: center;
   margin-top: 1.25rem;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-muted);
   text-decoration: none;
 }
 
@@ -3250,12 +3268,12 @@ body {
 
 .landing-page__links a {
   font-size: 0.78rem;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted);
   text-decoration: none;
 }
 
 .landing-page__links a:hover {
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--text);
 }
 
 /* 8글자 추출 애니메이션 */
@@ -3271,7 +3289,7 @@ body {
 .eight-extract__label {
   font-size: 0.75rem;
   letter-spacing: 0.3em;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-muted);
   margin: 0 0 2rem;
 }
 
@@ -3301,7 +3319,7 @@ body {
 .eight-extract__sub {
   margin: 2rem 0 0;
   font-size: 0.82rem;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-secondary);
 }
 
 /* 탐색 스탯 칩 */
