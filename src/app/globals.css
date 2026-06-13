@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-/* 8-bit — 다크 글래스 (전역) */
+/* 8-BIT — 다크 글래스 (전역) */
 
 :root {
   --bg-deep: #07070f;
@@ -2701,7 +2701,7 @@ body {
   gap: 0.75rem;
 }
 
-/* 8-bit — 벤토 리포트 (saju-explore 통합) */
+/* 8-BIT — 벤토 리포트 (saju-explore 통합) */
 .site-nav__brand-8code {
   color: var(--accent);
   letter-spacing: 0.08em;
@@ -3026,7 +3026,7 @@ body {
   transform: scale(0.25);
 }
 
-/* 홈 히어로 — 8-bit 그라데이션 셸 */
+/* 홈 히어로 — 8-BIT 그라데이션 셸 */
 .hero-shell {
   max-width: 40rem;
   margin: 0 auto;

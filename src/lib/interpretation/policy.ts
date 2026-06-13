@@ -5,7 +5,7 @@ import { COMMENTARY_DISCLAIMER } from '@/lib/philosophy/commentary';
 
 /** 사이트 철학에 맞춘 해석 출력 정책 — 모든 리포트·패널이 참조 */
 export const INTERPRETATION_POLICY = {
-  brand: '8-bit',
+  brand: '8-BIT',
   manifesto: FREE_TIER_MANIFESTO,
   explorePhilosophy: EXPLORE_PHILOSOPHY,
   determinism: SAJU_DETERMINISM.title,

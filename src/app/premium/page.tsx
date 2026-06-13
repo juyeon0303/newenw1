@@ -3,7 +3,7 @@ import { MONETIZATION_TIERS, FREE_TIER_MANIFESTO } from '@/lib/business/monetiza
 
 export const metadata = {
   title: '프리미엄',
-  description: '8-bit 인생 마스터북·운명 캘린더 — 준비 중.',
+  description: '8-BIT 인생 마스터북·운명 캘린더 — 준비 중.',
 };
 
 export default function PremiumPage() {

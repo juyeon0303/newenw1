@@ -12,7 +12,7 @@ import {
 
 export const metadata = {
   title: '사이트 철학',
-  description: '8-bit가 지키는 관점.',
+  description: '8-BIT가 지키는 관점.',
 };
 
 export default function PhilosophyPage() {

@@ -220,7 +220,7 @@ export function LifestyleClient({ embedded = false }: LifestyleClientProps) {
                 </p>
                 <a
                   href={talisman.svgDataUrl}
-                  download={`8-bit-talisman-${talisman.dayPillar}.svg`}
+                  download={`8-BIT-talisman-${talisman.dayPillar}.svg`}
                   className="btn btn--primary"
                 >
                   배경화면 다운로드
@@ -236,7 +236,7 @@ export function LifestyleClient({ embedded = false }: LifestyleClientProps) {
             <section className="lifestyle-panel">
               <h2>익명 사주 카운셀링 광장</h2>
               <p className="lifestyle-panel__summary">
-                당신의 8-bit(팔자)를 기반으로 익명 한탄·위로. 비슷한 코드를 가진 사람들이
+                당신의 8-BIT(팔자)를 기반으로 익명 한탄·위로. 비슷한 코드를 가진 사람들이
                 모입니다.
               </p>
               <div className="lifestyle-code-card">

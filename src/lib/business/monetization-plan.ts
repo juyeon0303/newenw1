@@ -42,7 +42,7 @@ export const MONETIZATION_TIERS: MonetizationTier[] = [
   },
   {
     id: 'pdf_manual',
-    title: '8-bit 평생 사용설명서 PDF',
+    title: '8-BIT 평생 사용설명서 PDF',
     priceHint: '9,900~14,900원',
     rationale: '템플릿 자동 생성 고마진 디지털 상품.',
     status: 'planned',

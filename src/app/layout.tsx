@@ -13,14 +13,14 @@ const geistSans = Geist({
 
 export const metadata: Metadata = {
   title: {
-    default: '8-bit',
-    template: '%s | 8-bit',
+    default: '8-BIT',
+    template: '%s | 8-BIT',
   },
-  description: '8-bit — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일·커뮤니티.',
+  description: '8-BIT — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일·커뮤니티.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
-    title: '8-bit',
+    title: '8-BIT',
     statusBarStyle: 'black-translucent',
   },
 };

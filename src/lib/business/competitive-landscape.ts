@@ -1,5 +1,5 @@
 /**
- * 경쟁 사주·운세 서비스 분석 + 8-bit 상위호환 전략.
+ * 경쟁 사주·운세 서비스 분석 + 8-BIT 상위호환 전략.
  * UI/해석 엔진이 이 정책을 따르도록 `interpretation/policy.ts`와 연동한다.
  */
 
@@ -13,7 +13,7 @@ export interface CompetitorProfile {
   algorithm: string[];
   /** 대표 기능 */
   features: string[];
-  /** 구조적 약점 (8-bit가 이겨야 할 지점) */
+  /** 구조적 약점 (8-BIT가 이겨야 할 지점) */
   weaknesses: string[];
 }
 
@@ -127,7 +127,7 @@ export const COMPETITOR_PROFILES: CompetitorProfile[] = [
   },
 ];
 
-/** 8-bit가 경쟁사 대비 우위를 점하는 축 */
+/** 8-BIT가 경쟁사 대비 우위를 점하는 축 */
 export const EIGHT_BIT_SUPERIORITY = {
   headline: '블랙박스 운세가 아니라, 검증 가능한 명리 탐구',
   pillars: [

@@ -65,9 +65,9 @@ export function LandingClient() {
               animate={{ opacity: 1, y: 0 }}
               className="landing-page__title"
             >
-              8-bit
+              8-BIT
             </motion.h1>
-            <p className="landing-page__tag">8-bit</p>
+            <p className="landing-page__tag">8-BIT</p>
             <p className="landing-page__intro">
               생년월일시만 입력하세요.
               <br />
@@ -84,7 +84,7 @@ export function LandingClient() {
 
           {existingChart && (
             <Link href="/explore" className="landing-page__resume">
-              저장된 8-bit 보기 →
+              저장된 8-BIT 보기 →
             </Link>
           )}
         </div>

@@ -58,7 +58,7 @@ export function EightCharExtraction({ chart, onComplete }: Props) {
   return (
     <div className="eight-extract" aria-live="polite">
       <p className="eight-extract__label">
-        {chart.meta.timeUnknown ? '8-bit · 삼주 연산 중…' : '8-bit 연산 중…'}
+        {chart.meta.timeUnknown ? '8-BIT · 삼주 연산 중…' : '8-BIT 연산 중…'}
       </p>
       <div className="eight-extract__stage">
         {chars.map((ch, i) => (

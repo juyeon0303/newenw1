@@ -26,7 +26,7 @@ export function ExploreInterpretationPanel({ chart }: Props) {
       </header>
 
       <details className="interpretation-panel__vs">
-        <summary>경쟁 서비스 대비 8-bit 방식</summary>
+        <summary>경쟁 서비스 대비 8-BIT 방식</summary>
         <ul className="interpretation-panel__vs-list">
           {EIGHT_BIT_SUPERIORITY.pillars.map((p) => (
             <li key={p.id}>

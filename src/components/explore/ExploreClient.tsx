@@ -66,7 +66,7 @@ export function ExploreClient() {
     <Suspense
       fallback={
         <div className="explore-empty">
-          <p>8-bit…</p>
+          <p>8-BIT…</p>
         </div>
       }
     >

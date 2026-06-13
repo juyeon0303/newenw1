@@ -1,7 +1,7 @@
 {
-  "name": "8-bit",
-  "short_name": "8-bit",
-  "description": "8-bit — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일",
+  "name": "8-BIT",
+  "short_name": "8-BIT",
+  "description": "8-BIT — 만세력 좌표, 벤토 리포트, 탐구·라이프스타일",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a12",

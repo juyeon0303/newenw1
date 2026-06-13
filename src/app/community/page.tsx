@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 
 export const metadata = {
   title: '운명 광장',
-  description: '8-bit를 달고 익명으로 고민·밈·질문을 나누는 집단지성 공간.',
+  description: '8-BIT를 달고 익명으로 고민·밈·질문을 나누는 집단지성 공간.',
 };
 
 type SearchParams = Promise<{ category?: string }>;
@@ -43,7 +43,7 @@ export default async function CommunityPage({
             글 쓰기
           </Link>
           <Link href="/explore" className="btn btn--ghost">
-            내 8-bit 보기
+            내 8-BIT 보기
           </Link>
         </div>
       </header>

@@ -24,7 +24,7 @@ export function SiteNav() {
     <header className="site-nav">
       <Link href="/" className="site-nav__brand">
         <span className="site-nav__mark">8</span>
-        <span className="site-nav__brand-8code">8-bit</span>
+        <span className="site-nav__brand-8code">8-BIT</span>
       </Link>
       <nav className="site-nav__links">
         {links.map((item) => {

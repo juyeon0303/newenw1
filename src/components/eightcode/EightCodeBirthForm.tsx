@@ -22,7 +22,7 @@ interface Props {
 export function EightCodeBirthForm({
   onSubmit,
   initial,
-  submitLabel = '8-bit 분석하기',
+  submitLabel = '8-BIT 분석하기',
 }: Props) {
   const [year, setYear] = useState(initial?.year ?? 1995);
   const [month, setMonth] = useState(initial?.month ?? 6);
