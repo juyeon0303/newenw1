@@ -67,12 +67,6 @@ export function LandingClient() {
             >
               8-BIT
             </motion.h1>
-            <p className="landing-page__tag">8-BIT</p>
-            <p className="landing-page__intro">
-              생년월일시만 입력하세요.
-              <br />
-              원리는 공개, 해석은 투명합니다.
-            </p>
           </header>
 
           <EightCodeBirthForm
