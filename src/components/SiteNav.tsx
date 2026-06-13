@@ -12,8 +12,8 @@ const links: NavLink[] = [
   { href: '/philosophy', label: '사이트 철학', zone: 'philosophy' },
   { href: '/explore', label: '명리 탐색', zone: 'free' },
   { href: '/wiki', label: '명리 위키', zone: 'open' },
-  { href: '/community', label: '운명 광장', zone: 'open' },
-  { href: '/premium', label: '프리미엄', zone: 'paid' },
+  { href: '/community', label: '커뮤니티', zone: 'open' },
+  { href: '/premium', label: '해설', zone: 'open' },
 ];
 
 export function SiteNav() {
@@ -30,14 +30,13 @@ export function SiteNav() {
         {links.map((item) => {
           const active =
             pathname === item.href ||
-            (item.href === '/explore' && pathname.startsWith('/explore'));
+            (item.href === '/explore' && pathname.startsWith('/explore')) ||
+            (item.href === '/community' && pathname.startsWith('/community'));
           return (
             <Link
               key={item.href}
               href={item.href}
-              className={`site-nav__link${active ? ' site-nav__link--active' : ''}${
-                item.zone === 'paid' ? ' site-nav__link--premium' : ''
-              }`}
+              className={`site-nav__link${active ? ' site-nav__link--active' : ''}`}
             >
               {item.label}
             </Link>

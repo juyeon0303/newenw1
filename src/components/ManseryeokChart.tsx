@@ -147,26 +147,119 @@ export function ManseryeokChart({ chart }: Props) {
         )}
       </div>
 
-      <details className="chart__luck">
-        <summary>
-          대운 · 세운 ({chart.luckMeta.daewoonSu}세起, {chart.luckMeta.isReverse ? '역행' : '順行'})
-          {chart.luckMeta.provisional ? ' · 잠정' : ''}
-        </summary>
+      <div className="chart__luck-panels">
         {chart.luckMeta.provisional && (
           <p className="chart__provisional-note">
             출생 시각 미상 — 대운·세운은 정오(12:00) 기준 잠정값입니다. 시간 확인 후 다시 산출하세요.
           </p>
         )}
-        <div className="luck-grid">
-          {chart.daewoon.map((d) => (
-            <div key={d.startAge} className="luck-cell">
-              <div className="luck-cell__age">{d.startAge}세</div>
-              <div className="luck-cell__pillar">{d.pillar}</div>
-              <div className="luck-cell__sub">{d.stemTenStarKo} · {d.stageBongKo}</div>
+
+        <section className="chart__luck-section">
+          <h3 className="chart__luck-title">
+            대운
+            <span className="chart__luck-meta">
+              {chart.luckMeta.daewoonSu}세起 · {chart.luckMeta.isReverse ? '역행' : '順行'}
+            </span>
+          </h3>
+          <div className="luck-grid">
+            {chart.daewoon.map((d, i) => (
+              <div
+                key={d.startAge}
+                className={`luck-cell${i === chart.luckMeta.currentDaewoonIndex ? ' luck-cell--active' : ''}`}
+              >
+                <div className="luck-cell__age">{d.startAge}~{d.endAge}세</div>
+                <div className="luck-cell__pillar">{d.pillar}</div>
+                <div className="luck-cell__sub">{d.stemTenStarKo} · {d.stageBongKo}</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {chart.sewoon.length > 0 && (
+          <section className="chart__luck-section">
+            <h3 className="chart__luck-title">
+              세운
+              <span className="chart__luck-meta">
+                {chart.sewoon[0]?.year}~{chart.sewoon[chart.sewoon.length - 1]?.year}
+              </span>
+            </h3>
+            <div className="luck-grid">
+              {chart.sewoon.map((s) => (
+                <div
+                  key={s.year}
+                  className={`luck-cell${s.year === chart.luckMeta.referenceYear ? ' luck-cell--active' : ''}`}
+                >
+                  <div className="luck-cell__age">{s.year}</div>
+                  <div className="luck-cell__pillar">{s.pillar}</div>
+                  <div className="luck-cell__sub">{s.stemTenStarKo} · {s.stageBongKo}</div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </details>
+          </section>
+        )}
+
+        {chart.wolwoon.length > 0 && (
+          <section className="chart__luck-section">
+            <h3 className="chart__luck-title">
+              월운
+              <span className="chart__luck-meta">{chart.luckMeta.referenceYear}년</span>
+            </h3>
+            <div className="luck-grid">
+              {chart.wolwoon.map((w) => (
+                <div
+                  key={`${w.year}-${w.month}`}
+                  className={`luck-cell${w.month === chart.luckMeta.referenceMonth ? ' luck-cell--active' : ''}`}
+                >
+                  <div className="luck-cell__age">{w.month}월</div>
+                  <div className="luck-cell__pillar">{w.pillar}</div>
+                  <div className="luck-cell__sub">{w.stemTenStarKo} · {w.stageBongKo}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {chart.iljin.length > 0 && (
+          <section className="chart__luck-section">
+            <h3 className="chart__luck-title">
+              일진
+              <span className="chart__luck-meta">
+                {chart.luckMeta.referenceYear}년 {chart.luckMeta.referenceMonth}월 · 음양오행
+              </span>
+            </h3>
+            <div className="iljin-table-wrap">
+              <table className="iljin-table">
+                <thead>
+                  <tr>
+                    <th>일</th>
+                    <th>간지</th>
+                    <th>천간</th>
+                    <th>지지</th>
+                    <th>십성</th>
+                    <th>12운</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {chart.iljin.map((d) => (
+                      <tr key={`${d.year}-${d.month}-${d.day}`} className={d.isToday ? 'iljin-table__today' : ''}>
+                        <td>{d.dateLabel}</td>
+                        <td className="iljin-table__pillar">{d.pillar}</td>
+                        <td>
+                          {d.stemKo}({d.stemElementKo}·{d.stemYinYang})
+                        </td>
+                        <td>
+                          {d.branchKo}({d.branchElementKo}·{d.branchYinYang})
+                        </td>
+                        <td>{d.stemTenStarKo}</td>
+                        <td>{d.stageBongKo}</td>
+                      </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+      </div>
     </div>
   );
 }

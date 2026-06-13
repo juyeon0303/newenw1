@@ -52,6 +52,14 @@ export function branchIndex(branch: EarthBranch): number {
   return EARTH_BRANCHES.indexOf(branch);
 }
 
+export function stemYinYang(stem: HeavenStem): '양' | '음' {
+  return stemIndex(stem) % 2 === 0 ? '양' : '음';
+}
+
+export function branchYinYang(branch: EarthBranch): '양' | '음' {
+  return branchIndex(branch) % 2 === 0 ? '양' : '음';
+}
+
 export function parsePillar(pillar: string): { stem: HeavenStem; branch: EarthBranch } {
   return { stem: pillar[0] as HeavenStem, branch: pillar[1] as EarthBranch };
 }

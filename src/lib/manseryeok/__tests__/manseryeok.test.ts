@@ -72,6 +72,10 @@ describe('calculateManseryeok', () => {
     expect(chart.daewoon.length).toBe(10);
     expect(chart.sewoon.length).toBeGreaterThan(0);
     expect(chart.wolwoon.length).toBe(12);
+    expect(chart.iljin.length).toBeGreaterThan(27);
+    expect(chart.iljin[0].stemYinYang).toMatch(/^(양|음)$/);
+    expect(chart.iljin[0].stemElementKo).toBeTruthy();
+    expect(chart.luckMeta.referenceYear).toBeGreaterThan(2000);
   });
 
   it('시간모름이면 삼주만 산출하고 시주는 미상', () => {

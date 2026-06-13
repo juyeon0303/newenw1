@@ -181,7 +181,7 @@ export const EIGHT_BIT_SUPERIORITY = {
     { feature: '커리어·재물 타이밍', competitors: '단정 조언', eightBit: '유년·유일 십성 + 점수 근거 + 탐구 톤' },
     { feature: 'AI 상담', competitors: '포스텔러·AI 사주', eightBit: '커뮤니티 + 외부 AI 권장(만세력 캡처)' },
     { feature: '위키·교육', competitors: '없거나 유료', eightBit: '명리 위키 오픈 아카이브' },
-    { feature: '커뮤니티', competitors: '제한적', eightBit: '운명 광장 — 익명 탐구 공유' },
+    { feature: '커뮤니티', competitors: '제한적', eightBit: '커뮤니티 — 익명 탐구 공유' },
     { feature: '관상·타로', competitors: '점신·포스텔러', eightBit: '비목표 — 명리 집중' },
   ],
 } as const;

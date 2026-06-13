@@ -816,6 +816,36 @@ body {
   margin-top: 1rem;
 }
 
+.chart__luck-panels {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.chart__luck-section {
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.chart__luck-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--accent);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.chart__luck-meta {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+}
+
 .chart__luck summary {
   cursor: pointer;
   color: var(--accent);
@@ -826,7 +856,6 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(4.5rem, 1fr));
   gap: 0.5rem;
-  margin-top: 0.75rem;
 }
 
 .luck-cell {
@@ -836,6 +865,12 @@ body {
   padding: 0.4rem;
   text-align: center;
   font-size: 0.7rem;
+}
+
+.luck-cell--active {
+  border-color: rgba(167, 139, 250, 0.55);
+  background: rgba(139, 92, 246, 0.12);
+  box-shadow: 0 0 0 1px rgba(167, 139, 250, 0.2);
 }
 
 .luck-cell__age {
@@ -850,6 +885,44 @@ body {
 .luck-cell__sub {
   color: var(--text-muted);
   font-size: 0.6rem;
+}
+
+.iljin-table-wrap {
+  overflow-x: auto;
+}
+
+.iljin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.78rem;
+}
+
+.iljin-table th,
+.iljin-table td {
+  padding: 0.45rem 0.55rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.iljin-table th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+}
+
+.iljin-table__pillar {
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.iljin-table__today {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.iljin-table__today td {
+  color: var(--text);
 }
 
 /* Explore panel — minimal */

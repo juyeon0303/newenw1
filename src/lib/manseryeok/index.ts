@@ -18,7 +18,11 @@ import {
   STEM_KO,
   TEN_STAR_KO,
   TERRAIN_KO,
+  branchYinYang,
   parsePillar,
+  stemYinYang,
+  STEM_ELEMENT,
+  BRANCH_ELEMENT,
   type EarthBranch as EB,
   type HeavenStem as HS,
 } from './constants/ganji';
@@ -108,10 +112,28 @@ export interface YearLuckDetail {
 }
 
 export interface MonthLuckDetail {
+  year: number;
   month: number;
   pillar: string;
   stemTenStarKo: string;
   stageBongKo: string;
+}
+
+export interface DayLuckDetail {
+  year: number;
+  month: number;
+  day: number;
+  dateLabel: string;
+  pillar: string;
+  stemKo: string;
+  branchKo: string;
+  stemYinYang: '양' | '음';
+  branchYinYang: '양' | '음';
+  stemElementKo: string;
+  branchElementKo: string;
+  stemTenStarKo: string;
+  stageBongKo: string;
+  isToday: boolean;
 }
 
 export interface ManseryeokResult {
@@ -145,6 +167,7 @@ export interface ManseryeokResult {
   daewoon: LuckPillarDetail[];
   sewoon: YearLuckDetail[];
   wolwoon: MonthLuckDetail[];
+  iljin: DayLuckDetail[];
   luckMeta: {
     /** 대운수 — 童限年数 (천을귀인 표기) */
     daewoonSu: number;
@@ -153,6 +176,9 @@ export interface ManseryeokResult {
     startLuckAge: number;
     startLuckDate: string;
     currentDaewoonIndex: number;
+    /** 세운·월운·일진 기준 연·월 (브라우저 로컬 시각) */
+    referenceYear: number;
+    referenceMonth: number;
     /** 시간모름일 때 대운·세운은 정오(12:00) 기준 잠정값 */
     provisional?: boolean;
   };
@@ -357,6 +383,58 @@ function iterateDaewoon(
   return result;
 }
 
+function buildStemBranchLuck(
+  pillar: string,
+  dayMaster: HS,
+): Pick<
+  DayLuckDetail,
+  | 'pillar'
+  | 'stemKo'
+  | 'branchKo'
+  | 'stemYinYang'
+  | 'branchYinYang'
+  | 'stemElementKo'
+  | 'branchElementKo'
+  | 'stemTenStarKo'
+  | 'stageBongKo'
+> {
+  const { stem, branch } = parsePillar(pillar);
+  const me = HeavenStem.fromName(dayMaster);
+  const hs = HeavenStem.fromName(stem);
+  const eb = EarthBranch.fromName(branch);
+  const stemEl = STEM_ELEMENT[stem];
+  const branchEl = BRANCH_ELEMENT[branch];
+  return {
+    pillar,
+    stemKo: STEM_KO[stem],
+    branchKo: BRANCH_KO[branch],
+    stemYinYang: stemYinYang(stem),
+    branchYinYang: branchYinYang(branch),
+    stemElementKo: ELEMENT_KO[stemEl],
+    branchElementKo: ELEMENT_KO[branchEl],
+    stemTenStarKo: koTenStar(me.getTenStar(hs).getName()),
+    stageBongKo: koTerrain(me.getTerrain(eb).getName()),
+  };
+}
+
+function iterateIljin(dayMaster: HS, year: number, month: number, todayDay: number): DayLuckDetail[] {
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const result: DayLuckDetail[] = [];
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const st = SolarTime.fromYmdHms(year, month, day, 12, 0, 0);
+    const dp = st.getLunarHour().getEightChar().getDay().getName();
+    result.push({
+      year,
+      month,
+      day,
+      dateLabel: `${month}/${day}`,
+      isToday: day === todayDay,
+      ...buildStemBranchLuck(dp, dayMaster),
+    });
+  }
+  return result;
+}
+
 export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
   const {
     year, month, day, hour, minute = 0, second = 0,
@@ -445,7 +523,10 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
   const childLimit = ChildLimit.fromSolarTime(solarTime, g);
   const daewoon = iterateDaewoon(childLimit, dayMaster, yearBranch, dayBranch, 10);
 
-  const nowYear = new Date().getFullYear();
+  const now = new Date();
+  const nowYear = now.getFullYear();
+  const nowMonth = now.getMonth() + 1;
+  const nowDay = now.getDate();
   const currentDaewoonIndex = daewoon.findIndex(
     (d) => nowYear >= d.startYear && nowYear <= d.endYear,
   );
@@ -467,18 +548,20 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
   }
 
   const wolwoon: MonthLuckDetail[] = [];
-  const targetYear = activeDaewoon.startYear;
   for (let m = 1; m <= 12; m++) {
-    const st = SolarTime.fromYmdHms(targetYear, m, 15, 12, 0, 0);
+    const st = SolarTime.fromYmdHms(nowYear, m, 15, 12, 0, 0);
     const mp = st.getLunarHour().getEightChar().getMonth().getName();
     const { stem, branch } = parsePillar(mp);
     wolwoon.push({
+      year: nowYear,
       month: m,
       pillar: mp,
       stemTenStarKo: koTenStar(me.getTenStar(HeavenStem.fromName(stem)).getName()),
       stageBongKo: koTerrain(me.getTerrain(EarthBranch.fromName(branch)).getName()),
     });
   }
+
+  const iljin = iterateIljin(dayMaster, nowYear, nowMonth, nowDay);
 
   const mc = MONTH_COMMAND[monthBranch];
   const dmElement = me.getElement().getName();
@@ -513,12 +596,15 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
     daewoon,
     sewoon,
     wolwoon,
+    iljin,
     luckMeta: {
       daewoonSu: childLimit.getYearCount(),
       isReverse: !childLimit.isForward(),
       startLuckAge: childLimit.getYearCount(),
       startLuckDate: childLimit.getEndTime().toString(),
       currentDaewoonIndex: activeIdx,
+      referenceYear: nowYear,
+      referenceMonth: nowMonth,
       provisional: unknownTime,
     },
   };

@@ -13,8 +13,8 @@ import {
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: '운명 광장',
-  description: '8-BIT를 달고 익명으로 고민·밈·질문을 나누는 집단지성 공간.',
+  title: '커뮤니티',
+  description: '8-BIT를 달고 익명으로 고민·밈·질문을 나누는 공간.',
 };
 
 type SearchParams = Promise<{ category?: string }>;
@@ -36,7 +36,7 @@ export default async function CommunityPage({
     <div className="community-page">
       <header className="community-page__header">
         <p className="community-page__eyebrow">OPEN · UGC</p>
-        <h1>운명 광장</h1>
+        <h1>커뮤니티</h1>
         <p className="community-page__intro">{COMMUNITY_INTRO}</p>
         <div className="community-page__actions">
           <Link href="/community/new" className="btn btn--primary">
