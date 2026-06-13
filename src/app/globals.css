@@ -3252,7 +3252,8 @@ body {
 .wake-bridge--exit {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.38s ease;
+  visibility: hidden;
+  transition: opacity 0.38s ease, visibility 0.38s ease;
 }
 
 .wake-bridge__glow--pulse {

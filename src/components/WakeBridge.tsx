@@ -34,8 +34,9 @@ function isColdWake(): boolean {
   return nav.responseStart - nav.requestStart > COLD_WAKE_MS;
 }
 
-function removeStaticSplash() {
-  document.getElementById('8bit-wake-static')?.remove();
+/** React 트리 밖 DOM 삭제 금지 — class만 토글 */
+function hideStaticSplash() {
+  document.getElementById('8bit-wake-static')?.classList.add('wake-bridge--exit');
 }
 
 export function WakeBridge() {
@@ -56,7 +57,7 @@ export function WakeBridge() {
   const [exiting, setExiting] = useState(false);
 
   useEffect(() => {
-    removeStaticSplash();
+    hideStaticSplash();
 
     const stageTimer = window.setInterval(() => {
       setStageIndex((i) => (i + 1) % WAKE_STAGES.length);
@@ -71,11 +72,9 @@ export function WakeBridge() {
     const maxMs = cold ? MAX_COLD_MS : MAX_VISIBLE_MS;
 
     const dismiss = () => {
+      hideStaticSplash();
       setExiting(true);
-      window.setTimeout(() => {
-        setVisible(false);
-        removeStaticSplash();
-      }, 380);
+      window.setTimeout(() => setVisible(false), 380);
     };
 
     const scheduleDismiss = () => {
