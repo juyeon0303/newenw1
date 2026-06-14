@@ -28,7 +28,7 @@ export default async function CommunityPage() {
             글 쓰기
           </Link>
           <Link href="/live" className="btn btn--ghost">
-            가가라이브
+            실시간 채팅
           </Link>
           <Link href="/explore" className="btn btn--ghost">
             내 8-BIT 보기

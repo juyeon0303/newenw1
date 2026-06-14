@@ -4,8 +4,8 @@ import { LiveChatPanel } from '@/components/live/LiveChatPanel';
 export const dynamic = 'force-dynamic';
 
 export const metadata = {
-  title: '가가라이브',
-  description: '8-BIT 실시간 채팅 — 유튜브·스트리밍 채팅처럼 대화가 올라옵니다.',
+  title: '실시간 채팅',
+  description: '8-BIT 커뮤니티 실시간 채팅 — 유튜브·스트리밍 채팅처럼 대화가 올라옵니다.',
 };
 
 export default function LivePage() {
@@ -14,14 +14,14 @@ export default function LivePage() {
       <header className="live-page__header">
         <div>
           <p className="live-page__eyebrow">LIVE · CHAT</p>
-          <h1>가가라이브</h1>
+          <h1>실시간 채팅</h1>
           <p className="live-page__intro">
-            실시간 채팅입니다. 글·댓글은{' '}
-            <Link href="/community">커뮤니티</Link>에서, 여기서는 채팅만 오갑니다.
+            커뮤니티 안의 실시간 채팅입니다. 글·댓글은{' '}
+            <Link href="/community">커뮤니티 목록</Link>에서 확인할 수 있습니다.
           </p>
         </div>
         <Link href="/community" className="btn btn--ghost btn--sm">
-          커뮤니티
+          ← 커뮤니티
         </Link>
       </header>
 

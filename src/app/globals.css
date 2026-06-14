@@ -1886,7 +1886,7 @@ body {
   color: var(--accent);
 }
 
-/* 가가라이브 — 실시간 채팅 */
+/* 실시간 채팅 (/live) */
 .live-page__header {
   display: flex;
   flex-wrap: wrap;
