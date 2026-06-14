@@ -20,9 +20,9 @@ export default async function CommunityPostPage({ params }: Params) {
   const replies = await listReplies(id);
 
   return (
-    <div className="community-page">
+    <div className="gaga-live gaga-live--detail">
       <Link href="/community" className="community-back">
-        ← 목록
+        ← 가가라이브
       </Link>
       <PostDetailClient post={post} replies={replies} />
     </div>

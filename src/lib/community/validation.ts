@@ -1,16 +1,8 @@
-import { COMMUNITY_CATEGORIES, type CommunityCategoryId } from './types';
-
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-const CATEGORY_IDS = new Set<string>(COMMUNITY_CATEGORIES.map((c) => c.id));
-
 export function isValidAuthorId(id: unknown): id is string {
   return typeof id === 'string' && UUID_RE.test(id);
-}
-
-export function isValidCategory(cat: unknown): cat is CommunityCategoryId {
-  return typeof cat === 'string' && CATEGORY_IDS.has(cat);
 }
 
 export function normalizeAuthorName(name: unknown): string | null {

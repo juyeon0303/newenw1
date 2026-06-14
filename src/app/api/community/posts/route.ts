@@ -1,27 +1,17 @@
-import { revalidatePath } from 'next/cache';
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createPost, listPosts } from '@/lib/community/store';
 import {
   isValidAuthorId,
-  isValidCategory,
   normalizeAuthorName,
   normalizeBody,
   normalizeTitle,
 } from '@/lib/community/validation';
-import type { CommunityCategoryId } from '@/lib/community/types';
 
 export const runtime = 'nodejs';
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const category = searchParams.get('category') ?? undefined;
-  if (category && !isValidCategory(category)) {
-    return NextResponse.json({ error: '잘못된 카테고리입니다.' }, { status: 400 });
-  }
-  const posts = await listPosts({
-    category: category as CommunityCategoryId | undefined,
-    limit: 100,
-  });
+export async function GET() {
+  const posts = await listPosts({ limit: 100 });
   return NextResponse.json({ posts });
 }
 
@@ -43,15 +33,11 @@ export async function POST(request: Request) {
   if (!authorName || !title || !text) {
     return NextResponse.json({ error: '입력값을 확인해 주세요.' }, { status: 400 });
   }
-  if (!isValidCategory(data.category)) {
-    return NextResponse.json({ error: '카테고리를 선택해 주세요.' }, { status: 400 });
-  }
 
   try {
     const post = await createPost({
       authorId: data.authorId,
       authorName,
-      category: data.category,
       title,
       body: text,
     });

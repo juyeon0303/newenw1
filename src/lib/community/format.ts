@@ -9,10 +9,3 @@ export function formatCommunityDate(iso: string): string {
     minute: '2-digit',
   });
 }
-
-export function categoryLabel(
-  categories: readonly { id: string; label: string }[],
-  id: string,
-): string {
-  return categories.find((c) => c.id === id)?.label ?? id;
-}

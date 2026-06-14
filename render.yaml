@@ -14,3 +14,5 @@ services:
         value: production
       - key: HOSTNAME
         value: 0.0.0.0
+      - key: COMMUNITY_DATA_PATH
+        value: /app/data

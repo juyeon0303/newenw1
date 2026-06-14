@@ -40,8 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# community runtime data (seed is committed)
+# community runtime data (SQLite DB)
 /data/community.json
+/data/community.db
+/data/community.db-wal
+/data/community.db-shm
 /data/*.tmp
 
 # local command output

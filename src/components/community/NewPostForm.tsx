@@ -1,23 +1,12 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { isValidCategory } from '@/lib/community/validation';
-import { COMMUNITY_CATEGORIES, type CommunityCategoryId } from '@/lib/community/types';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { ensureAuthor, loadAuthor } from '@/lib/community/author-session';
 import { CommunityAuthorBar } from './CommunityAuthorBar';
 
 export function NewPostForm() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const [category, setCategory] = useState<CommunityCategoryId>('explore');
-
-  useEffect(() => {
-    const c = searchParams.get('category');
-    if (c && isValidCategory(c)) {
-      setCategory(c as CommunityCategoryId);
-    }
-  }, [searchParams]);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +28,6 @@ export function NewPostForm() {
         body: JSON.stringify({
           authorId: author.id,
           authorName: author.name,
-          category,
           title,
           body,
         }),
@@ -59,22 +47,9 @@ export function NewPostForm() {
   }
 
   return (
-    <div className="community-form-wrap">
+    <div className="gaga-live-form">
       <CommunityAuthorBar />
       <form className="community-form" onSubmit={handleSubmit}>
-        <label>
-          <span>카테고리</span>
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as CommunityCategoryId)}
-          >
-            {COMMUNITY_CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.label}
-              </option>
-            ))}
-          </select>
-        </label>
         <label>
           <span>제목</span>
           <input

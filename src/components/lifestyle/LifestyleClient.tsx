@@ -248,12 +248,12 @@ export function LifestyleClient({ embedded = false }: LifestyleClientProps) {
               </div>
               <div className="lifestyle-counsel-actions">
                 <Link
-                  href={`/community/new?category=counsel`}
+                  href="/community/new"
                   className="btn btn--primary"
                 >
                   익명 글 쓰기
                 </Link>
-                <Link href="/community?category=counsel" className="btn btn--ghost">
+                <Link href="/community" className="btn btn--ghost">
                   운명 공동체 보기
                 </Link>
               </div>

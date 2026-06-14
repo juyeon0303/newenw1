@@ -10,38 +10,40 @@ import {
   listReplies,
   resetStoreForTests,
 } from '../store';
-import type { CommunityStore } from '../types';
+import { resetDbForTests } from '../db';
 
 let tmpDir: string;
 let prevDataPath: string | undefined;
+let prevDbPath: string | undefined;
 
 beforeEach(async () => {
   tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), 'community-test-'));
   prevDataPath = process.env.COMMUNITY_DATA_PATH;
+  prevDbPath = process.env.COMMUNITY_DB_PATH;
   process.env.COMMUNITY_DATA_PATH = tmpDir;
-  const seedSrc = path.join(process.cwd(), 'data', 'community.seed.json');
-  await fs.copyFile(seedSrc, path.join(tmpDir, 'community.seed.json'));
+  process.env.COMMUNITY_DB_PATH = path.join(tmpDir, 'test.db');
+  resetDbForTests();
 });
 
 afterEach(async () => {
+  resetDbForTests();
   process.env.COMMUNITY_DATA_PATH = prevDataPath;
+  process.env.COMMUNITY_DB_PATH = prevDbPath;
   await fs.rm(tmpDir, { recursive: true, force: true });
 });
 
 describe('community store', () => {
-  it('loads empty seed on first read', async () => {
+  it('starts with empty feed', async () => {
     const posts = await listPosts();
     expect(posts).toHaveLength(0);
   });
 
   it('creates post and reply', async () => {
-    const empty: CommunityStore = { version: 1, posts: [], replies: [] };
-    await resetStoreForTests(empty);
+    resetStoreForTests();
 
     const post = await createPost({
       authorId: '11111111-1111-4111-8111-111111111111',
       authorName: '테스터',
-      category: 'explore',
       title: '테스트 글',
       body: '본문 내용입니다.',
     });
@@ -62,12 +64,10 @@ describe('community store', () => {
   });
 
   it('deletes only own post', async () => {
-    const empty: CommunityStore = { version: 1, posts: [], replies: [] };
-    await resetStoreForTests(empty);
+    resetStoreForTests();
     const post = await createPost({
       authorId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
       authorName: '작성자',
-      category: 'other',
       title: '삭제 테스트',
       body: '삭제할 글입니다.',
     });
