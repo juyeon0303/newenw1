@@ -29,10 +29,9 @@ afterEach(async () => {
 });
 
 describe('community store', () => {
-  it('loads seed posts on first read', async () => {
+  it('loads empty seed on first read', async () => {
     const posts = await listPosts();
-    expect(posts.length).toBeGreaterThanOrEqual(2);
-    expect(posts[0]?.title).toBeTruthy();
+    expect(posts).toHaveLength(0);
   });
 
   it('creates post and reply', async () => {
