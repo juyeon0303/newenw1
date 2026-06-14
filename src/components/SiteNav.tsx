@@ -12,7 +12,8 @@ const links: NavLink[] = [
   { href: '/philosophy', label: '사이트 철학', zone: 'philosophy' },
   { href: '/explore', label: '명리 탐색', zone: 'free' },
   { href: '/wiki', label: '명리 위키', zone: 'open' },
-  { href: '/community', label: '가가라이브', zone: 'open' },
+  { href: '/community', label: '커뮤니티', zone: 'open' },
+  { href: '/live', label: '가가라이브', zone: 'open' },
   { href: '/premium', label: '해설', zone: 'open' },
 ];
 
@@ -31,7 +32,8 @@ export function SiteNav() {
           const active =
             pathname === item.href ||
             (item.href === '/explore' && pathname.startsWith('/explore')) ||
-            (item.href === '/community' && pathname.startsWith('/community'));
+            (item.href === '/community' && pathname.startsWith('/community')) ||
+            (item.href === '/live' && pathname.startsWith('/live'));
           return (
             <Link
               key={item.href}

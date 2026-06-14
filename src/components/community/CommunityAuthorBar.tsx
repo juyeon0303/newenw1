@@ -5,9 +5,10 @@ import { ensureAuthor, loadAuthor } from '@/lib/community/author-session';
 
 interface Props {
   onAuthorChange?: (name: string) => void;
+  compact?: boolean;
 }
 
-export function CommunityAuthorBar({ onAuthorChange }: Props) {
+export function CommunityAuthorBar({ onAuthorChange, compact }: Props) {
   const [name, setName] = useState('');
   const [saved, setSaved] = useState(false);
 
@@ -44,10 +45,12 @@ export function CommunityAuthorBar({ onAuthorChange }: Props) {
       <button type="submit" className="btn btn--ghost btn--sm">
         {saved ? '저장됨' : '저장'}
       </button>
-      <p className="community-author__hint">
-        로그인 없이 이 기기에만 식별자가 저장됩니다. 글 삭제는 같은 기기·같은 닉네임일 때만
-        가능합니다.
-      </p>
+      {!compact && (
+        <p className="community-author__hint">
+          로그인 없이 이 기기에만 식별자가 저장됩니다. 글 삭제는 같은 기기·같은 닉네임일 때만
+          가능합니다.
+        </p>
+      )}
     </form>
   );
 }

@@ -70,10 +70,10 @@ export function PostDetailClient({ post, replies: initialReplies }: Props) {
   }
 
   return (
-    <div className="gaga-live-detail">
-      <header className="gaga-live-detail__head">
-        <div className="gaga-live-detail__meta">
-          <span className="gaga-live__author">{post.authorName}</span>
+    <div className="community-detail">
+      <header className="community-detail__head">
+        <div className="community-detail__meta">
+          <span className="post-card__author">{post.authorName}</span>
           <time dateTime={post.createdAt}>{formatCommunityDate(post.createdAt)}</time>
         </div>
         <h1>{post.title}</h1>
@@ -83,7 +83,7 @@ export function PostDetailClient({ post, replies: initialReplies }: Props) {
           </button>
         )}
       </header>
-      <div className="gaga-live-detail__body">{post.body}</div>
+      <div className="community-detail__body">{post.body}</div>
 
       <section className="community-replies">
         <h2>댓글 {replies.length}</h2>

@@ -37,6 +37,16 @@ function initSchema(database: DatabaseSync): void {
 
     CREATE INDEX IF NOT EXISTS idx_posts_created ON posts(created_at DESC);
     CREATE INDEX IF NOT EXISTS idx_replies_post ON replies(post_id);
+
+    CREATE TABLE IF NOT EXISTS live_messages (
+      id TEXT PRIMARY KEY,
+      author_id TEXT NOT NULL,
+      author_name TEXT NOT NULL,
+      body TEXT NOT NULL,
+      created_at TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_live_messages_created ON live_messages(created_at);
   `);
 }
 
@@ -123,5 +133,5 @@ export function resetDbForTests(): void {
 
 export function clearAllPostsForTests(): void {
   const database = getDb();
-  database.exec('DELETE FROM replies; DELETE FROM posts;');
+  database.exec('DELETE FROM replies; DELETE FROM posts; DELETE FROM live_messages;');
 }

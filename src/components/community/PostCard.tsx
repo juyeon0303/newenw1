@@ -8,20 +8,20 @@ interface Props {
 
 export function PostCard({ post }: Props) {
   const preview =
-    post.body.length > 200 ? `${post.body.slice(0, 200).trim()}…` : post.body;
+    post.body.length > 160 ? `${post.body.slice(0, 160).trim()}…` : post.body;
 
   return (
-    <article className="gaga-live__item">
-      <div className="gaga-live__item-meta">
-        <span className="gaga-live__author">{post.authorName}</span>
+    <article className="post-card">
+      <div className="post-card__meta">
+        <span className="post-card__author">{post.authorName}</span>
         <time dateTime={post.createdAt}>{formatCommunityDate(post.createdAt)}</time>
       </div>
-      <h2 className="gaga-live__item-title">
+      <h2 className="post-card__title">
         <Link href={`/community/${post.id}`}>{post.title}</Link>
       </h2>
-      <p className="gaga-live__item-preview">{preview}</p>
-      <footer className="gaga-live__item-footer">
-        <Link href={`/community/${post.id}`} className="gaga-live__replies">
+      <p className="post-card__preview">{preview}</p>
+      <footer className="post-card__footer">
+        <Link href={`/community/${post.id}`} className="post-card__replies">
           댓글 {post.replyCount}
         </Link>
       </footer>

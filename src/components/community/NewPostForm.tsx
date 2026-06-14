@@ -47,7 +47,7 @@ export function NewPostForm() {
   }
 
   return (
-    <div className="gaga-live-form">
+    <div className="community-form-wrap">
       <CommunityAuthorBar />
       <form className="community-form" onSubmit={handleSubmit}>
         <label>

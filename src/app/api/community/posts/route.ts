@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
+import { NextResponse } from 'next/server';
 import { createPost, listPosts } from '@/lib/community/store';
 import {
   isValidAuthorId,
