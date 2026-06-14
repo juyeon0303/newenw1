@@ -1921,46 +1921,6 @@ body {
   color: var(--accent);
 }
 
-.live-page__stage {
-  display: grid;
-  grid-template-columns: 1fr minmax(17rem, 22rem);
-  gap: 1rem;
-  min-height: 28rem;
-}
-
-@media (max-width: 768px) {
-  .live-page__stage {
-    grid-template-columns: 1fr;
-    min-height: auto;
-  }
-}
-
-.live-page__video-placeholder {
-  background: var(--bg-card);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 16rem;
-  padding: 2rem;
-  text-align: center;
-}
-
-.live-page__video-label {
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 0.25em;
-  color: var(--accent);
-}
-
-.live-page__video-note {
-  margin: 0.75rem 0 0;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-
 .live-chat {
   display: flex;
   flex-direction: column;

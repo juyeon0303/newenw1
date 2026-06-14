@@ -25,13 +25,7 @@ export default function LivePage() {
         </Link>
       </header>
 
-      <div className="live-page__stage">
-        <div className="live-page__video-placeholder" aria-hidden>
-          <span className="live-page__video-label">8-BIT LIVE</span>
-          <p className="live-page__video-note">방송 영은 추후 연결 예정</p>
-        </div>
-        <LiveChatPanel />
-      </div>
+      <LiveChatPanel />
     </div>
   );
 }
