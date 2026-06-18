@@ -41,7 +41,7 @@ export function DaewoonTimeline({ daewoon, chart, currentIndex = 0 }: Props) {
                 onClick={() => setSelected(i)}
               >
                 <p className="text-[10px] text-white/40 mb-1">
-                  {d.startAge}~{d.endAge}세
+                  만 {d.startAge}~{d.endAge}세
                   {isCurrent && <span className="text-fuchsia-300/80 ml-1">· 현재</span>}
                 </p>
                 <p className="text-lg font-semibold tracking-tight">{d.pillar}</p>

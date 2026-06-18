@@ -26,6 +26,7 @@ import {
   type EarthBranch as EB,
   type HeavenStem as HS,
 } from './constants/ganji';
+import { internationalAge } from './age';
 import { MONTH_COMMAND, countElements } from './compute/monthly-command';
 import {
   detectBranchRelations,
@@ -173,7 +174,10 @@ export interface ManseryeokResult {
     daewoonSu: number;
     /** 역행 여부 */
     isReverse: boolean;
+    /** 첫 대운 시작 시점의 만나이 */
     startLuckAge: number;
+    /** 현재 만나이 (세운·월운 기준일) */
+    currentManAge: number;
     startLuckDate: string;
     currentDaewoonIndex: number;
     /** 세운·월운·일진 기준 연·월 (브라우저 로컬 시각) */
@@ -349,6 +353,7 @@ function buildPillar(
 
 function iterateDaewoon(
   childLimit: ChildLimit,
+  birth: { year: number; month: number; day: number },
   dayMaster: HS,
   yearBranch: EB,
   dayBranch: EB,
@@ -357,7 +362,6 @@ function iterateDaewoon(
   let df: DecadeFortune = childLimit.getStartDecadeFortune();
   const result: LuckPillarDetail[] = [];
   const me = HeavenStem.fromName(dayMaster);
-  const daewoonSu = childLimit.getYearCount();
 
   for (let i = 0; i < count; i++) {
     const sc = df.getSixtyCycle();
@@ -365,13 +369,16 @@ function iterateDaewoon(
     const { stem, branch } = parsePillar(pillar);
     const hs = HeavenStem.fromName(stem);
     const eb = EarthBranch.fromName(branch);
-    const traditionalStart = daewoonSu + i * 10;
+    const startYear = df.getStartSixtyCycleYear().getYear();
+    const endYear = df.getEndSixtyCycleYear().getYear();
+    const startAge = internationalAge(birth.year, birth.month, birth.day, startYear, 1, 1);
+    const endAge = internationalAge(birth.year, birth.month, birth.day, endYear, 12, 31);
     result.push({
       pillar,
-      startAge: traditionalStart,
-      endAge: traditionalStart + 9,
-      startYear: df.getStartSixtyCycleYear().getYear(),
-      endYear: df.getEndSixtyCycleYear().getYear(),
+      startAge,
+      endAge,
+      startYear,
+      endYear,
       stemTenStarKo: koTenStar(me.getTenStar(hs).getName()),
       stageBongKo: koTerrain(me.getTerrain(eb).getName()),
       spirit12ByYear: computeSpirit12ForPillar(branch, yearBranch, dayBranch, dayMaster),
@@ -521,12 +528,37 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
 
   const g = gender === 'male' ? Gender.MAN : Gender.WOMAN;
   const childLimit = ChildLimit.fromSolarTime(solarTime, g);
-  const daewoon = iterateDaewoon(childLimit, dayMaster, yearBranch, dayBranch, 10);
+  const daewoon = iterateDaewoon(
+    childLimit,
+    { year: corrected.year, month: corrected.month, day: corrected.day },
+    dayMaster,
+    yearBranch,
+    dayBranch,
+    10,
+  );
 
+  const luckStart = childLimit.getEndTime();
   const now = new Date();
   const nowYear = now.getFullYear();
   const nowMonth = now.getMonth() + 1;
   const nowDay = now.getDate();
+  const startLuckAge = internationalAge(
+    corrected.year,
+    corrected.month,
+    corrected.day,
+    luckStart.getYear(),
+    luckStart.getMonth(),
+    luckStart.getDay(),
+  );
+  const currentManAge = internationalAge(
+    corrected.year,
+    corrected.month,
+    corrected.day,
+    nowYear,
+    nowMonth,
+    nowDay,
+  );
+
   const currentDaewoonIndex = daewoon.findIndex(
     (d) => nowYear >= d.startYear && nowYear <= d.endYear,
   );
@@ -600,7 +632,8 @@ export function calculateManseryeok(input: ManseryeokInput): ManseryeokResult {
     luckMeta: {
       daewoonSu: childLimit.getYearCount(),
       isReverse: !childLimit.isForward(),
-      startLuckAge: childLimit.getYearCount(),
+      startLuckAge,
+      currentManAge,
       startLuckDate: childLimit.getEndTime().toString(),
       currentDaewoonIndex: activeIdx,
       referenceYear: nowYear,

@@ -77,13 +77,22 @@ describe('golden: 김성모 2003-12-23 12:16', () => {
     expect(chart.luckMeta.isReverse).toBe(true);
     expect(chart.daewoon[0].pillar).toBe('癸亥');
     expect(chart.daewoon[0].startAge).toBe(5);
+    expect(chart.daewoon[0].endAge).toBe(15);
   });
 
   it('대운 15세 壬戌', () => {
     const d15 = chart.daewoon.find((d) => d.startAge === 15);
     expect(d15?.pillar).toBe('壬戌');
+    expect(d15?.endAge).toBe(25);
     expect(d15?.stemTenStarKo).toBe('식신');
     expect(d15?.stageBongKo).toBe('쇠');
+  });
+
+  it('대운 25세 辛酉', () => {
+    const d25 = chart.daewoon.find((d) => d.startAge === 25);
+    expect(d25?.pillar).toBe('辛酉');
+    expect(d25?.startYear).toBe(2029);
+    expect(d25?.endAge).toBe(35);
   });
 
   it('2026 세운 丙午', () => {

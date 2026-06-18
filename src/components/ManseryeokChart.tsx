@@ -158,7 +158,7 @@ export function ManseryeokChart({ chart }: Props) {
           <h3 className="chart__luck-title">
             대운
             <span className="chart__luck-meta">
-              {chart.luckMeta.daewoonSu}세起 · {chart.luckMeta.isReverse ? '역행' : '順行'}
+              만 {chart.luckMeta.startLuckAge}세起 · {chart.luckMeta.isReverse ? '역행' : '順行'}
             </span>
           </h3>
           <div className="luck-grid">
@@ -167,7 +167,7 @@ export function ManseryeokChart({ chart }: Props) {
                 key={d.startAge}
                 className={`luck-cell${i === chart.luckMeta.currentDaewoonIndex ? ' luck-cell--active' : ''}`}
               >
-                <div className="luck-cell__age">{d.startAge}~{d.endAge}세</div>
+                <div className="luck-cell__age">만 {d.startAge}~{d.endAge}세</div>
                 <div className="luck-cell__pillar">{d.pillar}</div>
                 <div className="luck-cell__sub">{d.stemTenStarKo} · {d.stageBongKo}</div>
               </div>
